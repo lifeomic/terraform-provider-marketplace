@@ -12,11 +12,12 @@
 name: release
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    environment: terraform-registry
     steps:
       -
         name: Checkout
@@ -24,6 +25,11 @@ jobs:
       -
         name: Unshallow
         run: git fetch --prune --unshallow
+      - name: Install semantic-release Dependency
+        run: npm install -g semantic-release conventional-changelog-conventionalcommits
+      -
+        name: Tag Release
+        run: semantic-release
       -
         name: Set up Go
         uses: actions/setup-go@v2
@@ -36,7 +42,7 @@ jobs:
         env:
           # These secrets will need to be configured for the repository:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          PASSPHRASE: ${{ secrets.PASSPHRASE }}
+          PASSPHRASE: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2.8.0
