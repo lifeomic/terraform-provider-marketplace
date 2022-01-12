@@ -13,10 +13,6 @@ variable "name" {
   type = string
 }
 
-variable "image" {
-  type = string
-}
-
 variable "app_tile_id" {
   type = string
 }
@@ -31,7 +27,8 @@ resource "app_tile" "anxiety" {
   provider       = marketplace
   name           = var.name
   description    = var.description
-  image          = var.image
+  image          = "icon-240.png"
+  image_hash     = filemd5("./icon-240.png")
   app_tile_id    = var.app_tile_id
-  version        = "0.0.1"
+  version        = "0.0.11"
 }

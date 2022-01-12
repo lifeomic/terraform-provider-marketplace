@@ -15,7 +15,8 @@ resource "app_tile" "example" {
   description    = "This applet is created and managed using terraform"
   author_display = "LifeOmic"
   app_tile_id    = "some_id" # Probably get this from a applet resource from appstore
-  image          = "applets.example.com/route/to/applet/icon.png"
+  image          = "icon.png"
+  image_hash     = filemd5("./icon.png")
 }
 ```
 
@@ -25,4 +26,5 @@ resource "app_tile" "example" {
 * description: string
 * author_display: string
 * app_tile_id: string
-* image: string
+* image: string # Path to image
+* image_hash: string # Hash so that we know when the image has changed
