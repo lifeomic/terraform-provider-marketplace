@@ -37,10 +37,8 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 			return err
 		}
 		d.Set("image_hash", hash)
-		d.Set("image", app.Image.FileName+"."+app.Image.FileExtension)
 	} else {
 		d.Set("image_hash", nil)
-		d.Set("image", nil)
 	}
 
 	d.Set("name", app.Name)
