@@ -53,7 +53,7 @@ const SET_APP_TILE = `
 
 const PUBLISH_MODULE = `
   mutation PublishModule($input: PublishDraftModuleInputV2!) {
-	publishDraftModule(input: $input) {
+	publishDraftModuleV2(input: $input) {
 	  id
 	  version {
 		version
