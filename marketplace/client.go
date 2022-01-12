@@ -1,9 +1,15 @@
 package marketplace
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"log"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
@@ -20,16 +26,21 @@ const GET_PUBLISHED_APP_TILE_MODULE = `
 		  id
 		}
 	  }
+	  iconV2 {
+		url
+		fileName
+		fileExtension
+	  }
     }
   }
 `
 
 const CREATE_DRAFT_MODULE = `
-  mutation CreateDraftModule($input: CreateDraftModuleInput!) {
-    createDraftModule(input: $input) {
-      id
-    }
-  }
+ mutation CreateDraftModule($input: CreateDraftModuleInput!) {
+   createDraftModule(input: $input) {
+     id
+   }
+ }
 `
 
 const SET_APP_TILE = `
@@ -45,6 +56,24 @@ const PUBLISH_MODULE = `
 	publishDraftModule(input: $input) {
 	  id
 	  version
+	}
+  }
+`
+
+const START_IMAGE_UPLOAD = `
+  mutation StartImageUpload($input: StartUploadInput!) {
+	startUpload(input: $input) {
+	  id
+	  url
+	  fields
+	}
+  }
+`
+
+const FINALIZE_IMAGE_UPLOAD = `
+  mutation FinalizeImageUpload($input: FinalizeUploadInput!) {
+	finalizeUpload(input: $input) {
+	  moduleId
 	}
   }
 `
@@ -105,6 +134,11 @@ type appTileModule struct {
 	Source      struct {
 		Id string `json:"id"`
 	} `json:"source"`
+	Image *struct {
+		Url           string `json:"url"`
+		FileName      string `json:"fileName"`
+		FileExtension string `json:"fileExtension"`
+	} `json:"iconV2"`
 }
 
 func (client *MarketplaceClient) getAppTileModule(id string) (*appTileModule, error) {
@@ -141,6 +175,114 @@ type appTileCreate struct {
 
 type responsePayload struct {
 	Body string `json:"body"`
+}
+
+func postImageToUrl(url string, image string, file_name string, fields map[string]string) error {
+	file, err := os.Open(image)
+	if err != nil {
+		return err
+	}
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	for key, val := range fields {
+		err = writer.WriteField(key, val)
+		if err != nil {
+			return err
+		}
+	}
+	part, err := writer.CreateFormFile("file", file_name)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return err
+	}
+
+	err = writer.Close()
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", url, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	if err != nil {
+		return err
+	}
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	responseBody := &bytes.Buffer{}
+	responseBody.ReadFrom(resp.Body)
+	resp.Body.Close()
+	return nil
+}
+
+func (client *MarketplaceClient) attachImageToDraftModule(moduleId string, image string) error {
+	fileName := path.Base(image)
+	startResponse, err := client.gql(START_IMAGE_UPLOAD, map[string]interface{}{
+		"input": map[string]interface{}{
+			"fileName": fileName,
+		},
+	})
+	if err != nil {
+		return err
+	}
+	var startPayload responsePayload
+	err = json.Unmarshal(startResponse.Payload, &startPayload)
+	if err != nil {
+		return err
+	}
+	var startBody struct {
+		Data struct {
+			StartUpload struct {
+				Fields map[string]string `json:"fields"`
+				Url    string            `json:"url"`
+				Id     string            `json:"id"`
+			} `json:"startUpload"`
+		} `json:"data"`
+	}
+	err = json.Unmarshal([]byte(startPayload.Body), &startBody)
+	if err != nil {
+		return err
+	}
+
+	err = postImageToUrl(startBody.Data.StartUpload.Url, image, fileName, startBody.Data.StartUpload.Fields)
+	if err != nil {
+		return err
+	}
+
+	finalizeResponse, err := client.gql(FINALIZE_IMAGE_UPLOAD, map[string]interface{}{
+		"input": map[string]string{
+			"id":       startBody.Data.StartUpload.Id,
+			"moduleId": moduleId,
+			"type":     "ICON",
+		},
+	})
+
+	if err != nil {
+		return nil
+	}
+
+	var finalizePayload responsePayload
+	err = json.Unmarshal(finalizeResponse.Payload, &finalizePayload)
+	if err != nil {
+		return err
+	}
+
+	var finalizeBody struct {
+		Data struct {
+			FinalizeUpload struct {
+				ModuleId string `json:"moduleId"`
+			} `json:"finalizeUpload"`
+		} `json:"data"`
+	}
+
+	err = json.Unmarshal([]byte(finalizePayload.Body), &finalizeBody)
+	return err
 }
 
 func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*string, error) {
@@ -204,6 +346,13 @@ func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) 
 	if err != nil {
 		return nil, err
 	}
+
+	err = client.attachImageToDraftModule(moduleId, params.Image)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &moduleId, nil
 }
 

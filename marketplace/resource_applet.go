@@ -1,10 +1,28 @@
 package marketplace
 
 import (
+	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
+	"net/http"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
+
+func getHash(url string) (*string, error) {
+	res, err := http.Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+	body := &bytes.Buffer{}
+	_, err = body.ReadFrom(res.Body)
+
+	hash := md5.Sum(body.Bytes())
+	text := hex.EncodeToString(hash[:])
+	return &text, nil
+}
 
 func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
@@ -13,9 +31,20 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+	if app.Image != nil {
+		hash, err := getHash(app.Image.Url)
+		if err != nil {
+			return err
+		}
+		d.Set("image_hash", hash)
+		d.Set("image", app.Image.FileName+"."+app.Image.FileExtension)
+	} else {
+		d.Set("image_hash", nil)
+		d.Set("image", nil)
+	}
+
 	d.Set("name", app.Name)
 	d.Set("description", app.Description)
-	d.Set("image", "something_bogus")
 	d.Set("app_tile_id", app.Source.Id)
 	return nil
 }
@@ -70,7 +99,11 @@ func appTileResource() *schema.Resource {
 			},
 			"image": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+			},
+			"image_hash": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"app_tile_id": {
 				Type:     schema.TypeString,
