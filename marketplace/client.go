@@ -52,10 +52,12 @@ const SET_APP_TILE = `
 `
 
 const PUBLISH_MODULE = `
-  mutation PublishModule($input: PublishDraftModuleInput!) {
-	publishDraftModule(input: $input) {
+  mutation PublishModule($input: PublishDraftModuleInputV2!) {
+	publishDraftModuleV2(input: $input) {
 	  id
-	  version
+	  version {
+		version
+	  }
 	}
   }
 `
@@ -363,7 +365,9 @@ func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (
 	}
 	publishRes, err := client.gql(PUBLISH_MODULE, map[string]interface{}{"input": map[string]interface{}{
 		"moduleId": draftModuleId,
-		"version":  params.Version,
+		"version": map[string]string{
+			"version": params.Version,
+		},
 	}})
 	if err != nil {
 		return nil, err
@@ -377,7 +381,9 @@ func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (
 		Data struct {
 			PublishDraftModule struct {
 				Id      string `json:"id"`
-				Version string `json:"version"`
+				Version struct {
+					Version string `json:"version"`
+				} `json:"version"`
 			} `json:"publishDraftModule"`
 		} `json:"data"`
 	}
