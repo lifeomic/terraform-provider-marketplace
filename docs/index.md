@@ -17,6 +17,18 @@ resource "app_tile" "example" {
   app_tile_id    = "some_id" # Probably get this from a applet resource from appstore
   image          = "icon.png"
   image_hash     = filemd5("./icon.png")
+  version        = "0.0.12"
+}
+
+resource "app_tile" "auto_version_example" {
+  provider       = marketplace
+  name           = "Example App Tile for Marketplace"
+  description    = "This applet is created and managed using terraform"
+  author_display = "LifeOmic"
+  app_tile_id    = "some_id" # Probably get this from a applet resource from appstore
+  image          = "icon.png"
+  image_hash     = filemd5("./icon.png")
+  auto_version   = true
 }
 ```
 
@@ -28,3 +40,6 @@ resource "app_tile" "example" {
 * app_tile_id: string
 * image: string # Path to image
 * image_hash: string # Hash so that we know when the image has changed
+* version: string
+* auto_version: bool # Will autoincrement the patch value on any change
+
