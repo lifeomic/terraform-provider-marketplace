@@ -130,9 +130,9 @@ func (client *MarketplaceClient) gql(query string, variables map[string]interfac
 }
 
 type appTileModule struct {
-	Name        string  `json:"title"`
-	Description string  `json:"description"`
-	Version     *string `json:"version"`
+	Name        string `json:"title"`
+	Description string `json:"description"`
+	Version     string `json:"version"`
 	Source      struct {
 		Id string `json:"id"`
 	} `json:"source"`

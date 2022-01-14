@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/coreos/go-semver/semver"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
@@ -31,6 +32,7 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	if app.Image != nil {
 		hash, err := getHash(app.Image.Url)
 		if err != nil {
@@ -44,11 +46,19 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", app.Name)
 	d.Set("description", app.Description)
 	d.Set("app_tile_id", app.Source.Id)
+	d.Set("version", app.Version)
 	return nil
 }
 
 func createAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
+	_, versionExists := d.GetOk("version")
+	if !versionExists {
+		if !d.Get("auto_version").(bool) {
+			return errors.New("If you don't specify a version, you must use auto_version")
+		}
+		d.Set("version", "0.0.0")
+	}
 	id, err := client.publishNewAppTileModule(appTileCreate{
 		Name:           d.Get("name").(string),
 		Image:          d.Get("image").(string),
@@ -57,11 +67,9 @@ func createAppTile(d *schema.ResourceData, meta interface{}) error {
 		Version:        d.Get("version").(string),
 		ParentModuleId: nil,
 	})
-	println("err", err)
 	if err != nil {
 		return err
 	}
-	println("setting id", *id)
 	d.SetId(*id)
 	return nil
 }
@@ -69,6 +77,15 @@ func createAppTile(d *schema.ResourceData, meta interface{}) error {
 func updateAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
 	id := d.Id()
+	if d.Get("auto_version").(bool) {
+		version, err := semver.NewVersion(d.Get("version").(string))
+		if err != nil {
+			return err
+		}
+		version.BumpPatch()
+		d.Set("version", version.String())
+	}
+
 	_, err := client.publishNewAppTileModule(appTileCreate{
 		Name:           d.Get("name").(string),
 		Image:          d.Get("image").(string),
@@ -109,7 +126,11 @@ func appTileResource() *schema.Resource {
 			},
 			"version": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+			},
+			"auto_version": {
+				Type:     schema.TypeBool,
+				Optional: true,
 			},
 		},
 		Create: createAppTile,

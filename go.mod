@@ -32,6 +32,7 @@ require (
 	github.com/aws/smithy-go v1.9.0 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
+	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
