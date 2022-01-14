@@ -395,7 +395,7 @@ func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (
 }
 
 func BuildAppStoreClient() (*MarketplaceClient, error) {
-	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithSharedConfigProfile("lifeomic-dev"))
+	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
 		return nil, err
 	}
