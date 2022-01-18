@@ -155,7 +155,7 @@ func (client *MarketplaceClient) getAppTileModule(id string) (*appTileModule, er
 	}
 	var body struct {
 		Data struct {
-			MyModule appTileModule `json:"myModule"`
+			MyModule *appTileModule `json:"myModule"`
 		} `json:"data"`
 	}
 	err = json.Unmarshal([]byte(payload.Body), &body)
@@ -163,7 +163,7 @@ func (client *MarketplaceClient) getAppTileModule(id string) (*appTileModule, er
 		return nil, err
 	}
 	module := body.Data.MyModule
-	return &module, nil
+	return module, nil
 }
 
 type appTileCreate struct {
@@ -384,7 +384,7 @@ func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (
 				Version struct {
 					Version string `json:"version"`
 				} `json:"version"`
-			} `json:"publishDraftModule"`
+			} `json:"publishDraftModuleV2"`
 		} `json:"data"`
 	}
 	err = json.Unmarshal([]byte(publishPayload.Body), &publishModuleBody)
