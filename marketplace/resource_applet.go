@@ -5,7 +5,9 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/coreos/go-semver/semver"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -28,9 +30,24 @@ func getHash(url string) (*string, error) {
 func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
 	id := d.Id()
-	app, err := client.getAppTileModule(id)
-	if err != nil {
-		return err
+	var app *appTileModule
+	retryCount := 2
+	for app == nil && retryCount > 0 {
+		inner, err := client.getAppTileModule(id)
+		app = inner
+		if err != nil {
+			return err
+		}
+		if app == nil {
+			// Sometimes with eventual consistency the module isn't created yet
+			log.Println("Module not found, trying again in 5 seconds...")
+			time.Sleep(5 * time.Second)
+		}
+		retryCount -= 1
+	}
+
+	if app == nil {
+		return errors.New("No Module Found")
 	}
 
 	if app.Image != nil {
@@ -71,7 +88,7 @@ func createAppTile(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	d.SetId(*id)
-	return nil
+	return readAppTile(d, meta)
 }
 
 func updateAppTile(d *schema.ResourceData, meta interface{}) error {
