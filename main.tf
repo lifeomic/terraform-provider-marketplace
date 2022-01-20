@@ -38,3 +38,19 @@ resource "app_tile" "anxiety" {
     ]
   }
 }
+
+resource "app_tile" "second_test" {
+  provider       = marketplace
+  name           = "Test Terraform Module"
+  description    = "Simple test stuff"
+  image          = "icon-240.png"
+  image_hash     = filemd5("./icon-240.png")
+  app_tile_id    = var.app_tile_id
+  auto_version   = true
+  lifecycle {
+    ignore_changes = [
+      image,
+      version,
+    ]
+  }
+}
