@@ -50,8 +50,8 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("No Module Found")
 	}
 
-	if app.Image != nil {
-		hash, err := getHash(app.Image.Url)
+	if app.IconV2 != nil {
+		hash, err := getHash(app.IconV2.Url)
 		if err != nil {
 			return err
 		}
@@ -60,7 +60,7 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 		d.Set("image_hash", nil)
 	}
 
-	d.Set("name", app.Name)
+	d.Set("name", app.Title)
 	d.Set("description", app.Description)
 	d.Set("app_tile_id", app.Source.Id)
 	d.Set("version", app.Version)

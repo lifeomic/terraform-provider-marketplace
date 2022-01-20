@@ -2,17 +2,15 @@ package marketplace
 
 import (
 	"bytes"
-	"context"
-	"encoding/json"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
 
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/lambda"
+	"github.com/lifeomic/phc-sdk-go/client"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 const GET_PUBLISHED_APP_TILE_MODULE = `
@@ -92,78 +90,39 @@ type policy struct {
 	Rules map[string]bool `json:"rules"`
 }
 
-func gqlQuery(query string, variables map[string]interface{}) []byte {
-	type Body struct {
-		Query     string                 `json:"query"`
-		Variables map[string]interface{} `json:"variables"`
-	}
-	policy, _ := json.Marshal(&policy{
-		Rules: map[string]bool{
-			"publishContent": true,
-		},
-	})
-	body, _ := json.Marshal(&Body{Query: query, Variables: variables})
-	payload := &payload{
-		Headers:               map[string]string{"LifeOmic-Account": "lifeomic", "LifeOmic-User": "marketplace-tf", "content-type": "application/json", "LifeOmic-Policy": string(policy)},
-		HttpMethod:            "POST",
-		QueryStringParameters: map[string]string{},
-		Path:                  "/v1/marketplace/authenticated/graphql",
-		Body:                  string(body),
-	}
-	bytes, err := json.Marshal(payload)
-	if err != nil {
-		log.Fatalf("Failed to marshall payload %v", err)
-	}
-	return bytes
-}
+const GRAPHQL_URL = "marketplace-service:deployed/v1/marketplace/authenticated/graphql"
 
 type MarketplaceClient struct {
-	c *lambda.Client
-}
-
-func (client *MarketplaceClient) gql(query string, variables map[string]interface{}) (*lambda.InvokeOutput, error) {
-	MP_ARN := "marketplace-service:deployed"
-	return client.c.Invoke(context.Background(), &lambda.InvokeInput{
-		FunctionName: &MP_ARN,
-		Payload:      gqlQuery(query, variables),
-	})
+	phcClient *client.Client
 }
 
 type appTileModule struct {
-	Name        string `json:"title"`
-	Description string `json:"description"`
-	Version     string `json:"version"`
+	Title       string
+	Description string
+	Version     string
 	Source      struct {
-		Id string `json:"id"`
-	} `json:"source"`
-	Image *struct {
-		Url           string `json:"url"`
-		FileName      string `json:"fileName"`
-		FileExtension string `json:"fileExtension"`
-	} `json:"iconV2"`
+		Id string
+	}
+	IconV2 *struct {
+		Url           string
+		FileName      string
+		FileExtension string
+	}
 }
 
-func (client *MarketplaceClient) getAppTileModule(id string) (*appTileModule, error) {
-	res, err := client.gql(GET_PUBLISHED_APP_TILE_MODULE, map[string]interface{}{"id": id})
+func (self *MarketplaceClient) getAppTileModule(id string) (*appTileModule, error) {
+	res, err := self.phcClient.Gql(GRAPHQL_URL, GET_PUBLISHED_APP_TILE_MODULE, map[string]interface{}{"id": id})
 	if err != nil {
 		return nil, err
 	}
-	var payload responsePayload
-	err = json.Unmarshal(res.Payload, &payload)
+	var data struct {
+		MyModule *appTileModule
+	}
+	err = mapstructure.Decode(res, &data)
 	if err != nil {
 		return nil, err
 	}
-	var body struct {
-		Data struct {
-			MyModule *appTileModule `json:"myModule"`
-		} `json:"data"`
-	}
-	err = json.Unmarshal([]byte(payload.Body), &body)
-	if err != nil {
-		return nil, err
-	}
-	module := body.Data.MyModule
-	return module, nil
+	return data.MyModule, nil
 }
 
 type appTileCreate struct {
@@ -173,10 +132,6 @@ type appTileCreate struct {
 	AppTileId      string
 	Version        string
 	ParentModuleId *string
-}
-
-type responsePayload struct {
-	Body string `json:"body"`
 }
 
 func postImageToUrl(url string, image string, file_name string, fields map[string]string) error {
@@ -223,9 +178,9 @@ func postImageToUrl(url string, image string, file_name string, fields map[strin
 	return nil
 }
 
-func (client *MarketplaceClient) attachImageToDraftModule(moduleId string, image string) error {
+func (self *MarketplaceClient) attachImageToDraftModule(moduleId string, image string) error {
 	fileName := path.Base(image)
-	startResponse, err := client.gql(START_IMAGE_UPLOAD, map[string]interface{}{
+	startResponse, err := self.phcClient.Gql(GRAPHQL_URL, START_IMAGE_UPLOAD, map[string]interface{}{
 		"input": map[string]interface{}{
 			"fileName": fileName,
 		},
@@ -233,33 +188,26 @@ func (client *MarketplaceClient) attachImageToDraftModule(moduleId string, image
 	if err != nil {
 		return err
 	}
-	var startPayload responsePayload
-	err = json.Unmarshal(startResponse.Payload, &startPayload)
-	if err != nil {
-		return err
+	var startData struct {
+		StartUpload struct {
+			Fields map[string]string
+			Url    string
+			Id     string
+		}
 	}
-	var startBody struct {
-		Data struct {
-			StartUpload struct {
-				Fields map[string]string `json:"fields"`
-				Url    string            `json:"url"`
-				Id     string            `json:"id"`
-			} `json:"startUpload"`
-		} `json:"data"`
-	}
-	err = json.Unmarshal([]byte(startPayload.Body), &startBody)
+	err = mapstructure.Decode(startResponse, &startData)
 	if err != nil {
 		return err
 	}
 
-	err = postImageToUrl(startBody.Data.StartUpload.Url, image, fileName, startBody.Data.StartUpload.Fields)
+	err = postImageToUrl(startData.StartUpload.Url, image, fileName, startData.StartUpload.Fields)
 	if err != nil {
 		return err
 	}
 
-	finalizeResponse, err := client.gql(FINALIZE_IMAGE_UPLOAD, map[string]interface{}{
+	finalizeResponse, err := self.phcClient.Gql(GRAPHQL_URL, FINALIZE_IMAGE_UPLOAD, map[string]interface{}{
 		"input": map[string]string{
-			"id":       startBody.Data.StartUpload.Id,
+			"id":       startData.StartUpload.Id,
 			"moduleId": moduleId,
 			"type":     "ICON",
 		},
@@ -269,26 +217,18 @@ func (client *MarketplaceClient) attachImageToDraftModule(moduleId string, image
 		return nil
 	}
 
-	var finalizePayload responsePayload
-	err = json.Unmarshal(finalizeResponse.Payload, &finalizePayload)
-	if err != nil {
-		return err
+	var finalizeData struct {
+		FinalizeUpload struct {
+			ModuleId string
+		}
 	}
 
-	var finalizeBody struct {
-		Data struct {
-			FinalizeUpload struct {
-				ModuleId string `json:"moduleId"`
-			} `json:"finalizeUpload"`
-		} `json:"data"`
-	}
-
-	err = json.Unmarshal([]byte(finalizePayload.Body), &finalizeBody)
+	err = mapstructure.Decode(finalizeResponse, &finalizeData)
 	return err
 }
 
-func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*string, error) {
-	res, err := client.gql(CREATE_DRAFT_MODULE, map[string]interface{}{"input": map[string]interface{}{
+func (self *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*string, error) {
+	res, err := self.phcClient.Gql(GRAPHQL_URL, CREATE_DRAFT_MODULE, map[string]interface{}{"input": map[string]interface{}{
 		"title":       params.Name,
 		"description": params.Description,
 		// "iconV2":         params.Image, // Use upload
@@ -300,28 +240,20 @@ func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) 
 		return nil, err
 	}
 
-	var createDraftModulePayload responsePayload
-	err = json.Unmarshal(res.Payload, &createDraftModulePayload)
+	var createDraftData struct {
+		CreateDraftModule struct {
+			Id string
+		}
+	}
+
+	err = mapstructure.Decode(res, &createDraftData)
 	if err != nil {
 		return nil, err
 	}
 
-	var createDraftModuleBody struct {
-		Data struct {
-			CreateDraftModule struct {
-				Id string `json:"id"`
-			} `json:"createDraftModule"`
-		} `json:"data"`
-	}
+	moduleId := createDraftData.CreateDraftModule.Id
 
-	err = json.Unmarshal([]byte(createDraftModulePayload.Body), &createDraftModuleBody)
-	if err != nil {
-		return nil, err
-	}
-
-	moduleId := createDraftModuleBody.Data.CreateDraftModule.Id
-
-	res, err = client.gql(SET_APP_TILE, map[string]interface{}{"input": map[string]interface{}{
+	res, err = self.phcClient.Gql(GRAPHQL_URL, SET_APP_TILE, map[string]interface{}{"input": map[string]interface{}{
 		"moduleId": moduleId,
 		"sourceInfo": map[string]string{
 			"id": params.AppTileId,
@@ -332,24 +264,17 @@ func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) 
 		return nil, err
 	}
 
-	var setAppTilePayload responsePayload
-	err = json.Unmarshal(res.Payload, &setAppTilePayload)
-	if err != nil {
-		return nil, err
+	var setAppTileData struct {
+		SetPublicAppTileDraftModuleSource struct {
+			ModuleId string
+		}
 	}
-	var setAppTileBody struct {
-		Data struct {
-			SetPublicAppTileDraftModuleSource struct {
-				ModuleId string `json:"moduleId"`
-			} `json:"setPublicAppTileDraftModuleSource"`
-		} `json:"data"`
-	}
-	err = json.Unmarshal([]byte(setAppTilePayload.Body), &setAppTileBody)
+	err = mapstructure.Decode(res, &setAppTileData)
 	if err != nil {
 		return nil, err
 	}
 
-	err = client.attachImageToDraftModule(moduleId, params.Image)
+	err = self.attachImageToDraftModule(moduleId, params.Image)
 
 	if err != nil {
 		return nil, err
@@ -358,12 +283,12 @@ func (client *MarketplaceClient) createAppTileDraftModule(params appTileCreate) 
 	return &moduleId, nil
 }
 
-func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (*string, error) {
-	draftModuleId, err := client.createAppTileDraftModule(params)
+func (self *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (*string, error) {
+	draftModuleId, err := self.createAppTileDraftModule(params)
 	if err != nil {
 		return nil, err
 	}
-	publishRes, err := client.gql(PUBLISH_MODULE, map[string]interface{}{"input": map[string]interface{}{
+	publishRes, err := self.phcClient.Gql(GRAPHQL_URL, PUBLISH_MODULE, map[string]interface{}{"input": map[string]interface{}{
 		"moduleId": draftModuleId,
 		"version": map[string]string{
 			"version": params.Version,
@@ -372,33 +297,28 @@ func (client *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (
 	if err != nil {
 		return nil, err
 	}
-	var publishPayload responsePayload
-	err = json.Unmarshal(publishRes.Payload, &publishPayload)
+	var publishModuleData struct {
+		PublishDraftModuleV2 struct {
+			Id      string
+			Version struct {
+				Version string
+			}
+		}
+	}
+	err = mapstructure.Decode(publishRes, &publishModuleData)
 	if err != nil {
 		return nil, err
 	}
-	var publishModuleBody struct {
-		Data struct {
-			PublishDraftModule struct {
-				Id      string `json:"id"`
-				Version struct {
-					Version string `json:"version"`
-				} `json:"version"`
-			} `json:"publishDraftModuleV2"`
-		} `json:"data"`
-	}
-	err = json.Unmarshal([]byte(publishPayload.Body), &publishModuleBody)
-	if err != nil {
-		return nil, err
-	}
-	return &publishModuleBody.Data.PublishDraftModule.Id, nil
+	return &publishModuleData.PublishDraftModuleV2.Id, nil
 }
 
 func BuildAppStoreClient() (*MarketplaceClient, error) {
-	cfg, err := config.LoadDefaultConfig(context.Background())
+	phcClient, err := client.BuildClient("lifeomic", "marketplace-tf", map[string]bool{
+		"publishContent": true,
+	})
 	if err != nil {
 		return nil, err
 	}
-	client := MarketplaceClient{c: lambda.NewFromConfig(cfg)}
+	client := MarketplaceClient{phcClient: phcClient}
 	return &client, nil
 }
