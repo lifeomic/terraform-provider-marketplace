@@ -14,7 +14,8 @@ func Provider() terraform.ResourceProvider {
 		ConfigureFunc: providerConfigure,
 		Schema:        map[string]*schema.Schema{},
 		ResourcesMap: map[string]*schema.Resource{
-			"app_tile": appTileResource(),
+			"app_tile":          appTileResource(),
+			"wellness_offering": wellnessOfferingResource(),
 		},
 	}
 }
