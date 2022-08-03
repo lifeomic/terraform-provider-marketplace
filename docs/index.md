@@ -34,12 +34,11 @@ resource "app_tile" "auto_version_example" {
 
 ## Argument Reference
 
-* name: string
-* description: string
-* author_display: string
-* app_tile_id: string
-* image: string # Path to image
-* image_hash: string # Hash so that we know when the image has changed
-* version: string
-* auto_version: bool # Will autoincrement the patch value on any change
-
+- name: string
+- description: string
+- author_display: string
+- app_tile_id: string
+- image: string # Path to image
+- image_hash: string # Hash so that we know when the image has changed
+- version: string
+- auto_version: bool # Will autoincrement the patch value on any change
