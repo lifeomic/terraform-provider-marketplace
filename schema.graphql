@@ -1,0 +1,2010 @@
+type ActivePost implements Post {
+  attachments: [String!]!
+  authorId: String
+  createdAt: Date!
+  id: ID!
+  lastModifiedAt: Date
+  message: String!
+  metadata: String
+  originalPost: Post!
+  originalPostId: ID!
+  parentId: ID!
+  parentPost: Post
+  popularity: Int!
+  priority: Priority
+  reactionTotals(includeCustomReactions: Boolean = false): [ReactionTotal!]!
+  replies(after: String, first: Int = 5, order: PostOrder = NEWEST): PostConnection!
+  replyCount: Int!
+  rootParentId: ID!
+  systemGenerated: Boolean!
+}
+
+type AppTile {
+  description: String
+  id: String
+  name: String
+  type: ModuleCategory!
+  url: String!
+}
+
+type AppTileConnection {
+  edges: [AppTileEdge!]!
+  pageInfo: PageInfo!
+}
+
+type AppTileEdge {
+  node: AppTile!
+}
+
+input AppTileInput {
+  id: ID!
+}
+
+input AppTilesInput {
+  cursor: String!
+  limit: Int!
+}
+
+input ApproveModulePublishInput {
+  entitlements: [Entitlement!]
+  moduleId: ID!
+  notes: String
+}
+
+type ApproveModulePublishResponse {
+  id: String!
+  version: ModuleVersionResponse!
+}
+
+type AssignDraftModuleForReviewResponse {
+  assignedReviewer: ID!
+  moduleId: ID!
+}
+
+type CancelModulePublishResponse {
+  id: String!
+}
+
+input CancelSubscriptionInput {
+  moduleId: ID!
+  purchaseId: ID!
+}
+
+type CancelSubscriptionResponse {
+  cancelled: Boolean!
+}
+
+type ConnectAccount {
+  status: ConnectAccountStatus
+}
+
+enum ConnectAccountStatus {
+  ENABLED
+  ERROR
+  PAYOUTS_DISABLED
+  PENDING
+  WARNING
+}
+
+type Consent {
+  account: String!
+  date: String!
+  id: String!
+  identifier: [ConsentIdentifier!]
+  item: [QuestionnaireItem!]!
+  meta: ConsentMeta!
+  project: String!
+  status: String!
+  title: String!
+  type: ModuleCategory!
+  version: String!
+}
+
+type ConsentConnection {
+  edges: [ConsentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ConsentEdge {
+  node: ConsentsListResponse!
+}
+
+type ConsentIdentifier {
+  system: String!
+  value: String!
+}
+
+input ConsentInput {
+  id: String!
+  project: String!
+}
+
+type ConsentMeta {
+  tag: [ConsentTag!]!
+}
+
+input ConsentModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+type ConsentTag {
+  code: String!
+  system: String!
+}
+
+input ConsentsInput {
+  project: String!
+}
+
+type ConsentsListResponse {
+  account: String!
+  date: String!
+  id: String!
+  identifier: [ConsentIdentifier!]
+  meta: ConsentMeta!
+  project: String!
+  status: String!
+  title: String!
+  type: ModuleCategory!
+  version: String!
+}
+
+input CreateDraftModuleInput {
+  category: ModuleCategory!
+  description: String
+  icon: Upload
+
+  """
+  A unique identifier to use for the new module. If not provided, one will be generated.
+  """
+  id: ID
+  languages: [String!]
+  licenseDetails: LicenseDetailsInput
+  parentModuleId: ID
+  previewImages: [FileWithDescription!]
+  previewVideoUrls: [String!]
+  prices: [DraftModulePriceInput!]
+  products: [ModuleProduct!]
+  scope: MarketplaceModuleScope
+  support: String
+  tags: [String!]
+  title: String
+  websiteUrl: String
+}
+
+type CreateDraftModuleResponse {
+  id: String!
+}
+
+input CreateMarketplaceReviewInput {
+  comment: String
+  displayName: String!
+  moduleId: ID!
+  moduleVersion: String!
+
+  """Value of [1-5]"""
+  rating: Int!
+}
+
+input CreateMarketplaceReviewReplyInput {
+  comment: String!
+  moduleId: ID!
+  ratingId: ID!
+}
+
+input CreateModuleCheckoutSessionInput {
+  cancel: String!
+  domain: String
+  moduleId: ID!
+  priceId: ID!
+  success: String!
+}
+
+type CreateModuleCheckoutSessionResponse {
+  sessionId: ID!
+}
+
+input CreateReviewInput {
+  comment: String
+  displayName: String
+  entityId: ID!
+  entityType: EntityType!
+
+  """
+   Optional field, if an entity type has multiple versions but reviews are tied
+  to the base ID, you can have the version as meta data
+  """
+  entityVersion: String
+
+  """A unique identifier for the review, useful for ensuring idempotency"""
+  id: ID
+  rating: Int!
+}
+
+input CreateReviewReplyInput {
+  comment: String!
+  entityId: ID!
+
+  """
+  A unique identifier for the review reply, useful for ensuring idempotency
+  """
+  id: ID
+  ratingId: ID!
+}
+
+"""An ISO-8601 date string."""
+scalar Date
+
+type DeleteDraftModuleResponse {
+  id: ID!
+}
+
+input DeleteModuleInput {
+  moduleId: ID!
+  version: String
+}
+
+type DeleteModuleResponse {
+  id: ID!
+  version: String
+}
+
+type DeletedPost implements Post {
+  createdAt: Date!
+  deletedAt: Date!
+  id: ID!
+  metadata: String
+  originalPost: Post!
+  originalPostId: ID!
+  parentId: ID!
+  parentPost: Post
+  popularity: Int!
+  priority: Priority
+  replies(after: String, first: Int = 5, order: PostOrder = NEWEST): PostConnection!
+  replyCount: Int!
+  rootParentId: ID!
+  systemGenerated: Boolean!
+}
+
+input DenyModulePublishInput {
+  moduleId: ID!
+  notes: String!
+}
+
+type DenyModulePublishResponse {
+  id: String!
+}
+
+input DoesInstallExistInput {
+  moduleId: ID!
+  moduleVersion: String
+}
+
+input DoesMyReviewExistInput {
+  moduleId: ID!
+  moduleVersion: String
+}
+
+type DoesMyReviewExistResponse {
+  exists: Boolean!
+
+  """ID of the review IFF it exists"""
+  id: ID
+}
+
+type DomainOntologiesConnection {
+  edges: [DomainOntologiesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DomainOntologiesEdge {
+  node: DomainOntology!
+}
+
+type DomainOntology {
+  account: String!
+  availability: String
+  description: String
+  id: String!
+  immutable: Boolean
+  project: String!
+  title: String
+  type: ModuleCategory!
+  url: String!
+  version: String
+}
+
+input DomainOntologyInput {
+  id: String!
+  project: String!
+}
+
+input DomainOntologyModuleSourceInfo {
+  projectId: ID!
+  sourceId: ID!
+}
+
+type DraftMarketplaceModule {
+  assignedReviewer: ID
+  category: ModuleCategory!
+  description: String
+  icon: String @deprecated(reason: "Use `iconV2` instead")
+  iconV2: MarketplaceModuleImage
+  id: ID!
+  languages: [String!]
+  licenseDetails: LicenseDetails
+  organization: OrganizationField!
+  parentModule: MarketplaceModule
+  parentModuleId: ID
+  previewImages: [PreviewImageWithDescription!] @deprecated(reason: "Use previewImagesV2 instead")
+  previewImagesV2: MarketplaceModulePreviewImages
+  previewVideoUrls: [String!]
+  prices: [DraftModulePrice!]
+  products: [ModuleProduct!]
+  scope: MarketplaceModuleScope!
+  source: MarketplaceModuleSource
+  support: String
+  tags: [String!]
+  title: String
+  websiteUrl: String
+}
+
+type DraftMarketplaceModuleConnection {
+  edges: [DraftMarketplaceModuleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DraftMarketplaceModuleEdge {
+  node: DraftMarketplaceModule!
+}
+
+type DraftModulePrice {
+  """Amount in pennies USD"""
+  amount: Int!
+  interval: PaymentInterval!
+}
+
+input DraftModulePriceInput {
+  """Amount in pennies USD"""
+  amount: Int!
+  interval: PaymentInterval!
+}
+
+enum DraftModuleStatus {
+  DRAFT
+  IN_REVIEW
+}
+
+input DraftModulesInManualReviewInput {
+  assignedToMe: Boolean
+}
+
+input DraftModulesInput {
+  category: ModuleCategory
+  status: DraftModuleStatus
+}
+
+"""Emoji custom scalar type"""
+scalar Emoji
+
+enum Entitlement {
+  lifeAscent
+  lifePlus
+}
+
+type EntityRating {
+  average: Float
+  count: Int!
+}
+
+type EntityReviewDetails {
+  rating: EntityRating!
+  reviews(after: String, first: Int = 5): ReviewConnection!
+}
+
+enum EntityType {
+  EXPERT
+  MARKETPLACE_RESOURCE
+}
+
+input FileWithDescription {
+  description: String
+  file: Upload!
+}
+
+input FinalizeUploadInput {
+  description: String
+  id: ID!
+  moduleId: ID!
+  priority: Int
+  type: UploadType!
+}
+
+type FinalizeUploadResponse {
+  moduleId: ID!
+}
+
+input FloatRange {
+  lower: Float
+  upper: Float
+}
+
+input GetBillingPortalLinkInput {
+  domain: String
+
+  """Path to return to when leaving the billing portal"""
+  success: String!
+}
+
+type GetBillingPortalLinkResponse {
+  url: String!
+}
+
+input GetConnectAccountLinkInput {
+  domain: String
+
+  """path for if the link generate is expired, will redirect them here"""
+  expired: String!
+
+  """path for successfully loading up account dashboard and returning"""
+  success: String!
+}
+
+type GetConnectAccountLinkResponse {
+  url: String!
+}
+
+input GetReviewByIdInput {
+  entityId: ID!
+  id: ID!
+}
+
+type IncorrectScopeMessage {
+  message: String!
+}
+
+type InsightsLayout {
+  account: String!
+  description: String
+  id: String!
+  name: String!
+  project: String!
+  rank: Int!
+  type: ModuleCategory!
+}
+
+type InsightsLayoutConnection {
+  edges: [InsightsLayoutEdge!]!
+  pageInfo: PageInfo!
+}
+
+type InsightsLayoutEdge {
+  node: InsightsLayout!
+}
+
+input InsightsLayoutInput {
+  id: String!
+  project: String!
+}
+
+input InsightsLayoutModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+input InsightsLayoutsInput {
+  project: String
+}
+
+type Install {
+  id: ID!
+  installedOn: Long!
+  module: InstallModule!
+}
+
+type InstallConnection {
+  edges: [InstallEdge!]!
+  pageInfo: PageInfo!
+}
+
+input InstallConsentModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallConsentModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+input InstallDomainOntologyModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallDomainOntologyModuleResponse {
+  id: String!
+  project: String!
+  version: String!
+}
+
+input InstallDraftModuleInput {
+  moduleId: ID!
+  project: ID
+  version: String
+}
+
+type InstallDraftModuleResponse {
+  moduleId: ID!
+}
+
+type InstallEdge {
+  node: Install!
+}
+
+input InstallInsightsLayoutModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallInsightsLayoutModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+union InstallModule = IncorrectScopeMessage | MarketplaceModule | ModuleDeletedMessage
+
+input InstallNotebookModuleInput {
+  moduleId: ID!
+  version: String!
+}
+
+type InstallNotebookModuleResponse {
+  moduleId: ID!
+  version: String!
+}
+
+input InstallPatientLayoutModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallPatientLayoutModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+input InstallProcessOntologyModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallProcessOntologyModuleResponse {
+  id: String!
+  project: String!
+  version: String!
+}
+
+input InstallProgramEnrollmentModuleInput {
+  enrollmentScheduledTime: String
+  moduleId: ID!
+  version: String!
+}
+
+type InstallProgramEnrollmentModuleResponse {
+  moduleId: ID!
+  version: String!
+}
+
+input InstallProgramTemplateModuleInput {
+  moduleId: ID!
+  project: String!
+  version: String!
+}
+
+type InstallProgramTemplateModuleResponse {
+  moduleId: ID!
+  version: String!
+}
+
+input InstallPublicAppTileModuleInput {
+  moduleId: ID!
+  version: String!
+}
+
+type InstallPublicAppTileModuleResponse {
+  appTileId: ID!
+  moduleId: ID!
+  version: String!
+}
+
+input InstallReportExtractorModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallReportExtractorModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+input InstallSearchLayoutModuleInput {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+type InstallSearchLayoutModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+input InstallSurveyModuleInput {
+  moduleId: ID!
+  project: ID!
+  surveyVersion: String
+  version: String!
+}
+
+type InstallSurveyModuleResponse {
+  moduleId: ID!
+  project: ID!
+  version: String!
+}
+
+input InstallWellnessOfferingModuleInput {
+  """The configuration to install for this offering, as a JSON blob."""
+  configuration: String!
+
+  """Whether the offering should be enabled."""
+  enabled: Boolean!
+
+  """The target engagement percentage for employee redemption"""
+  engagementTarget: Int!
+  moduleId: ID!
+
+  """
+  The amount the employeer is subsidizing for the offering, in USD Pennies.
+  """
+  subsidyAmount: Int!
+
+  """The frequency by which redemption rules are applied to employees"""
+  subsidyPeriod: Period!
+  version: String!
+}
+
+type InstallWellnessOfferingModuleResponse {
+  id: String!
+  version: String!
+}
+
+input InstallWorkflowModuleInput {
+  moduleId: ID!
+  version: String!
+}
+
+type InstallWorkflowModuleResponse {
+  moduleId: ID!
+  version: String!
+}
+
+input InstallsInput {
+  moduleId: ID
+  moduleVersion: String
+}
+
+input IntRange {
+  lower: Int
+  upper: Int
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type LicenseDetails {
+  message: String
+  url: String!
+}
+
+input LicenseDetailsInput {
+  message: String
+  url: String!
+}
+
+input LicensedModulesInput {
+  category: ModuleCategory
+  search: String
+  tags: [String!]
+}
+
+"""The `Long` scalar type represents 52-bit integers"""
+scalar Long
+
+type MarketplaceModule {
+  author: String @deprecated(reason: "Use `authorV2` instead. Always returns null")
+  authorV2: String
+  category: ModuleCategory!
+  description: String!
+  entitlements: [String!]
+  icon: String @deprecated(reason: "Use `iconV2` instead")
+  iconV2: MarketplaceModuleImage
+  id: ID!
+  languages: [String!]
+  licenseDetails: LicenseDetails
+  organization: OrganizationField!
+  previewImages: [PreviewImageWithDescription!] @deprecated(reason: "Use previewImagesV2 instead")
+  previewImagesV2: MarketplaceModulePreviewImages
+  previewVideoUrls: [String!]
+  prices: [ModulePrice!]
+  products: [ModuleProduct!]
+  publishedOn: Long!
+  rating: EntityRating!
+  reviews(after: String, first: Int): ReviewConnection!
+  scope: MarketplaceModuleScope!
+  source: MarketplaceModuleSource!
+  support: String
+  tags: [String!]!
+  title: String!
+  version: String!
+  versions(after: String, first: Int): VersionsConnection! @deprecated(reason: "Use 'versionsV2' instead")
+  versionsV2(after: String, first: Int): VersionsV2Connection!
+  websiteUrl: String
+}
+
+type MarketplaceModuleImage {
+  fileExtension: String!
+  fileName: String!
+  url: String!
+}
+
+type MarketplaceModulePreviewImage {
+  description: String
+  fileExtension: String!
+  fileName: String!
+  url: String!
+}
+
+type MarketplaceModulePreviewImages {
+  images: [MarketplaceModulePreviewImage!]
+}
+
+enum MarketplaceModuleScope {
+  LICENSED
+  ORGANIZATION
+  PUBLIC
+}
+
+union MarketplaceModuleSource = AppTile | Consent | DomainOntology | InsightsLayout | Notebook | OcrReportExtractor | PatientLayout | ProcessOntology | ProgramEnrollment | ProgramTemplate | SearchLayout | Survey | WellnessOffering | Workflow
+
+type MarketplaceModuleTagsConnection {
+  edges: [MarketplaceModuleTagsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MarketplaceModuleTagsEdge {
+  node: MarketplaceModuleTagsItem!
+}
+
+type MarketplaceModuleTagsItem {
+  count: Int!
+  value: String!
+}
+
+type MarketplaceModulesConnection {
+  edges: [MarketplaceModulesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type MarketplaceModulesEdge {
+  node: MarketplaceModule!
+}
+
+enum ModuleCategory {
+  APP_TILE
+  CONSENT
+  DOMAIN_ONTOLOGY
+  INSIGHTS_LAYOUT
+  NOTEBOOK
+  PATIENT_VIEWER_LAYOUT
+  PROCESS_ONTOLOGY
+  PROGRAM_ENROLLMENT
+  PROGRAM_TEMPLATE
+  REPORT_EXTRACTOR
+  SEARCH_LAYOUT
+  SURVEY
+  WELLNESS_OFFERING
+  WORKFLOW
+}
+
+type ModuleCategoryStats {
+  category: ModuleCategory!
+  total: Int!
+}
+
+type ModuleDeletedMessage {
+  message: String!
+  moduleId: ID!
+}
+
+type ModulePrice {
+  """Amount in pennies USD"""
+  amount: Int!
+  id: ID!
+  interval: PaymentInterval!
+}
+
+enum ModuleProduct {
+  LIFEOLOGY
+  LIFE_EXTEND_APP
+  LIFE_FASTING_APP
+  LIFE_MOBILE_APPS
+  OCR
+  PHC
+  PRECISION_OUTCOMES
+  PRECISION_WELLNESS
+  SKILLSPRING
+}
+
+type ModulePublishReview {
+  created: Long!
+  createdBy: String
+  id: ID!
+  moduleId: ID!
+  moduleVersion: String
+  moduleVersionChangelog: String
+  notes: String
+  status: ModuleReviewStatus!
+}
+
+type ModulePublishReviewsConnection {
+  edges: [ModulePublishReviewsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ModulePublishReviewsEdge {
+  node: ModulePublishReview!
+}
+
+enum ModuleReviewStatus {
+  APPROVED
+  CANCELED
+  DENIED
+  INITIAL_APPROVAL
+  NEW
+}
+
+type ModuleScopeStats {
+  scope: MarketplaceModuleScope!
+  total: Int!
+}
+
+type ModuleStatsDateRange {
+  from: String!
+  to: String!
+}
+
+input ModuleStatsDateRangeInput {
+  from: String!
+  to: String!
+}
+
+input ModuleStatsInput {
+  dateRange: ModuleStatsDateRangeInput
+}
+
+type ModuleStatsResponse {
+  categories: [ModuleCategoryStats]
+  dateRange: ModuleStatsDateRange!
+  scopes: [ModuleScopeStats]
+  total: Int!
+}
+
+input ModuleTagsInput {
+  category: ModuleCategory
+  value: String
+}
+
+input ModuleVersionInput {
+  changeLog: String
+  version: String!
+}
+
+type ModuleVersionResponse {
+  changeLog: String
+  created: Long!
+  version: String!
+}
+
+input ModulesInput {
+  category: ModuleCategory
+  includeTestModules: Boolean
+  languages: [String!]
+  price: PriceSearchInput
+  products: [ModuleProduct!]
+  ratingAvg: FloatRange
+  ratingCount: IntRange
+  search: String
+  tags: [String!]
+}
+
+type Mutation {
+  """Approves draft module review and publishes module to the marketplace"""
+  approveModulePublish(input: ApproveModulePublishInput!): ApproveModulePublishResponse!
+
+  """Assigns draft module to the current user for manual review"""
+  assignDraftModuleForReview(moduleId: ID!): AssignDraftModuleForReviewResponse!
+
+  """Module owner cancels publish review process"""
+  cancelModulePublish(moduleId: ID!): CancelModulePublishResponse!
+  cancelSubscription(input: CancelSubscriptionInput!): CancelSubscriptionResponse!
+  createDraftModule(input: CreateDraftModuleInput!): CreateDraftModuleResponse!
+  createMarketplaceReview(input: CreateMarketplaceReviewInput!): Review!
+  createMarketplaceReviewReply(input: CreateMarketplaceReviewReplyInput!): Review!
+  createModuleCheckoutSession(input: CreateModuleCheckoutSessionInput!): CreateModuleCheckoutSessionResponse!
+  deleteDraftModule(moduleId: ID!): DeleteDraftModuleResponse!
+  deleteModule(input: DeleteModuleInput!): DeleteModuleResponse!
+  denyModulePublish(input: DenyModulePublishInput!): DenyModulePublishResponse!
+  finalizeUpload(input: FinalizeUploadInput!): FinalizeUploadResponse!
+  getBillingPortalLink(input: GetBillingPortalLinkInput!): GetBillingPortalLinkResponse!
+  getConnectAccountLink(input: GetConnectAccountLinkInput!): GetConnectAccountLinkResponse!
+  installConsentModule(input: InstallConsentModuleInput!): InstallConsentModuleResponse!
+  installDomainOntologyModule(input: InstallDomainOntologyModuleInput!): InstallDomainOntologyModuleResponse!
+
+  """Install draft module to test account for manual review"""
+  installDraftModule(input: InstallDraftModuleInput!): InstallDraftModuleResponse!
+  installInsightsLayoutModule(input: InstallInsightsLayoutModuleInput!): InstallInsightsLayoutModuleResponse!
+  installNotebookModule(input: InstallNotebookModuleInput!): InstallNotebookModuleResponse!
+  installPatientLayoutModule(input: InstallPatientLayoutModuleInput!): InstallPatientLayoutModuleResponse!
+  installProcessOntologyModule(input: InstallProcessOntologyModuleInput!): InstallProcessOntologyModuleResponse!
+  installProgramEnrollmentModule(input: InstallProgramEnrollmentModuleInput!): InstallProgramEnrollmentModuleResponse!
+  installProgramTemplateModule(input: InstallProgramTemplateModuleInput!): InstallProgramTemplateModuleResponse!
+  installPublicAppTileModule(input: InstallPublicAppTileModuleInput!): InstallPublicAppTileModuleResponse!
+  installReportExtractorModule(input: InstallReportExtractorModuleInput!): InstallReportExtractorModuleResponse!
+  installSearchLayoutModule(input: InstallSearchLayoutModuleInput!): InstallSearchLayoutModuleResponse!
+  installSurveyModule(input: InstallSurveyModuleInput!): InstallSurveyModuleResponse!
+  installWellnessOfferingModule(input: InstallWellnessOfferingModuleInput!): InstallWellnessOfferingModuleResponse!
+  installWorkflowModule(input: InstallWorkflowModuleInput!): InstallWorkflowModuleResponse!
+  publishDraftModule(input: PublishDraftModuleInput!): PublishDraftModuleResponse! @deprecated(reason: "Use `publishDraftModuleV2` instead")
+  publishDraftModuleV2(input: PublishDraftModuleInputV2!): PublishDraftModuleResponseV2!
+
+  """publish workflow which uses marketplace approval process"""
+  publishDraftModuleV3(input: PublishDraftModuleInputV3!): PublishDraftModuleResponseV3!
+  removeAllMarketplaceReviews(moduleId: ID!): Boolean!
+
+  """Removes the `iconV2` image from the draft"""
+  removeDraftModuleIconV2(input: RemoveDraftModuleIconV2Input!): RemoveDraftModuleIconV2Response!
+
+  """
+  Removes the preview image (`previewImageV2`) from the draft identified by the `imageId`, `fileName` and `fileExtension`
+  """
+  removeDraftModulePreviewImagesV2(input: RemoveDraftModulePreviewImagesV2Input!): RemoveDraftModulePreviewImagesV2Response!
+  removeMarketplaceReview(input: RemoveMarketplaceReviewInput!): Boolean!
+  removeMarketplaceReviewReply(input: RemoveMarketplaceReviewReplyInput!): Review! @deprecated(reason: "Use removeMarketplaceReviewReply_v2")
+  removeMarketplaceReviewReply_v2(input: RemoveMarketplaceReviewReplyInput_v2!): Review!
+  setConsentDraftModuleSource(input: SetConsentDraftModuleSourceInput!): SetConsentLayoutDraftModuleSourceResponse!
+  setDomainOntologyDraftModuleSource(input: SetDraftModuleDomainOntologySourceInput!): SetDraftModuleDomainOntologySourceResponse!
+  setInsightsLayoutDraftModuleSource(input: SetInsightsLayoutDraftModuleSourceInput!): SetInsightsLayoutDraftModuleSourceResponse!
+  setNotebookDraftModuleSource(input: SetNotebookDraftModuleSourceInput!): SetNotebookDraftModuleSourceResponse!
+  setOrgAppTileDraftModuleSource(input: SetOrgAppTileDraftModuleSourceInput!): SetAppTileDraftModuleSourceResponse!
+  setPatientLayoutDraftModuleSource(input: SetPatientLayoutDraftModuleSourceInput!): SetPatientLayoutDraftModuleSourceResponse!
+  setProcessOntologyDraftModuleSource(input: SetDraftModuleProcessOntologySourceInput!): SetDraftModuleProcessOntologySourceResponse!
+  setProgramEnrollmentDraftModuleSource(input: SetProgramEnrollmentDraftModuleSourceInput!): SetProgramEnrollmentDraftModuleSourceResponse!
+  setProgramTemplateDraftModuleSource(input: SetProgramTemplateDraftModuleSourceInput!): SetProgramTemplateDraftModuleSourceResponse!
+  setPublicAppTileDraftModuleSource(input: SetPublicAppTileDraftModuleSourceInput!): SetAppTileDraftModuleSourceResponse!
+  setReportExtractorDraftModuleSource(input: SetReportExtractorDraftModuleSourceInput!): SetReportExtractorDraftModuleSourceResponse!
+  setSearchLayoutDraftModuleSource(input: SetSearchLayoutDraftModuleSourceInput!): SetSearchLayoutDraftModuleSourceResponse!
+  setSurveyDraftModuleSource(input: SetSurveyDraftModuleSourceInput!): SetSurveyLayoutDraftModuleSourceResponse!
+  setWellnessOfferingDraftModuleSource(input: SetDraftModuleWellnessOfferingSourceInput!): SetDraftModuleWellnessOfferingSourceResponse!
+  setWorkflowDraftModuleSource(input: SetWorkflowDraftModuleSourceInput!): SetWorkflowDraftModuleSourceResponse!
+  startUpload(input: StartUploadInput!): StartUploadResponse!
+  updateDraftModule(input: UpdateDraftModuleInput!): UpdateDraftModuleResponse!
+
+  """
+  Updates the preview image (`previewImageV2`) from the draft identified by the `imageId`, `fileName` and `fileExtension`,
+  currently only supports adding or removing a `description` as this is the only field
+  """
+  updateDraftModulePreviewImagesV2(input: UpdateDraftModulePreviewImagesV2Input!): UpdateDraftModulePreviewImagesV2Response!
+  updateMarketplaceReview(input: UpdateMarketplaceReviewInput!): Review!
+  updateMarketplaceReviewReply(input: UpdateMarketplaceReviewReplyInput!): Review! @deprecated(reason: "Use updateMarketplaceReviewReply_v2")
+  updateMarketplaceReviewReply_v2(input: UpdateMarketplaceReviewReplyInput_v2!): Review!
+}
+
+type Notebook {
+  description: String!
+  id: String!
+  meta_version: String!
+  name: String!
+  organization: String!
+  type: ModuleCategory!
+  url: String!
+}
+
+type NotebookConnection {
+  edges: [NotebookEdge!]!
+  pageInfo: PageInfo!
+}
+
+type NotebookEdge {
+  node: Notebook!
+}
+
+input NotebookInput {
+  id: ID!
+  version: String!
+}
+
+input NotebookModuleSourceInfo {
+  id: ID!
+  version: String!
+}
+
+input NotebookModuleSourceInput {
+  id: ID!
+  version: String!
+}
+
+type OcrReportExtractor {
+  account: String!
+  creatorUser: String!
+  id: String!
+  lastUpdated: String!
+  project: String!
+  reportExtractor: ReportExtractor!
+  type: ModuleCategory!
+}
+
+type OcrReportExtractorConnection {
+  edges: [OcrReportExtractorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OcrReportExtractorEdge {
+  node: OcrReportExtractor!
+}
+
+input OcrReportExtractorInput {
+  id: String!
+  project: String!
+}
+
+input OcrReportExtractorsInput {
+  project: String
+}
+
+input OrgAppTileModuleSourceInfo {
+  url: String!
+}
+
+input OrgModuleTagsInput {
+  category: ModuleCategory
+  value: String
+}
+
+input OrgModulesInput {
+  category: ModuleCategory
+  search: String
+  tags: [String!]
+}
+
+type OrganizationField {
+  id: String!
+
+  """URL to the logo image"""
+  logo: String
+  name: String
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type PatientLayout {
+  account: String!
+  description: String
+  id: String!
+  name: String!
+  project: String!
+  rank: Int!
+  type: ModuleCategory!
+}
+
+type PatientLayoutConnection {
+  edges: [PatientLayoutEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PatientLayoutEdge {
+  node: PatientLayout!
+}
+
+input PatientLayoutInput {
+  id: String!
+  project: String!
+}
+
+input PatientLayoutModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+input PatientLayoutsInput {
+  project: String
+}
+
+enum PaymentInterval {
+  FREE
+  MONTHLY
+  ONCE
+  YEARLY
+}
+
+enum Period {
+  ANNUALLY
+  BIANNUALLY
+  MONTHLY
+  QUARTERLY
+}
+
+interface Post {
+  createdAt: Date!
+  id: ID!
+  metadata: String
+  originalPost: Post!
+  originalPostId: ID!
+  parentId: ID!
+  parentPost: Post
+  popularity: Int!
+  priority: Priority
+  replies(after: String, first: Int = 5, order: PostOrder = NEWEST): PostConnection!
+  replyCount: Int!
+  rootParentId: ID!
+  systemGenerated: Boolean!
+}
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+}
+
+type PostEdge {
+  node: Post!
+}
+
+enum PostOrder {
+  NEWEST
+  OLDEST
+}
+
+type PreviewImageWithDescription {
+  description: String
+  url: String!
+}
+
+input PriceSearchInput {
+  interval: PaymentInterval!
+  range: IntRange
+}
+
+enum Priority {
+  ANNOUNCEMENT
+  STANDARD
+}
+
+type ProcessOntologiesConnection {
+  edges: [ProcessOntologiesEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ProcessOntologiesEdge {
+  node: ProcessOntology!
+}
+
+type ProcessOntology {
+  account: String!
+  availability: String
+  description: String
+  id: String!
+  immutable: Boolean
+  project: String!
+  title: String
+  type: ModuleCategory!
+  url: String!
+  version: String
+}
+
+input ProcessOntologyInput {
+  id: String!
+  project: String!
+}
+
+input ProcessOntologyModuleSourceInfo {
+  projectId: ID!
+  sourceId: ID!
+}
+
+type ProgramEnrollment {
+  account: String!
+  description: String!
+  displayName: String!
+  id: String!
+  project: String!
+  slug: String!
+  type: ModuleCategory!
+}
+
+type ProgramEnrollmentConnection {
+  edges: [ProgramEnrollmentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ProgramEnrollmentEdge {
+  node: ProgramEnrollment!
+}
+
+input ProgramEnrollmentInput {
+  project: String!
+  slug: String!
+}
+
+input ProgramEnrollmentModuleSourceInfo {
+  project: ID!
+  slug: ID!
+}
+
+input ProgramEnrollmentsInput {
+  project: String!
+}
+
+type ProgramTemplate {
+  account: String!
+  description: String!
+  displayName: String!
+  id: String!
+  project: String!
+  slug: String!
+  type: ModuleCategory!
+}
+
+type ProgramTemplateConnection {
+  edges: [ProgramTemplateEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ProgramTemplateEdge {
+  node: ProgramTemplate!
+}
+
+input ProgramTemplateInput {
+  project: String!
+  slug: String!
+}
+
+input ProgramTemplateModuleSourceInfo {
+  project: ID!
+  slug: ID!
+}
+
+input ProgramTemplatesInput {
+  project: String!
+}
+
+type Project {
+  id: String!
+  lrn: String!
+  name: String!
+  owner: String
+}
+
+type ProjectsConnection {
+  edges: [ProjectsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ProjectsEdge {
+  node: Project!
+}
+
+input ProjectsInput {
+  name: String
+}
+
+input PublicAppTileModuleSourceInfo {
+  id: ID!
+}
+
+input PublishDraftModuleInput {
+  isTestModule: Boolean
+  moduleId: ID!
+  showAuthor: Boolean
+  version: String!
+}
+
+input PublishDraftModuleInputV2 {
+  isTestModule: Boolean
+  moduleId: ID!
+  showAuthor: Boolean
+  version: ModuleVersionInput!
+}
+
+input PublishDraftModuleInputV3 {
+  isTestModule: Boolean
+  moduleId: ID!
+  showAuthor: Boolean
+  version: ModuleVersionInput!
+}
+
+type PublishDraftModuleResponse {
+  id: String!
+  version: String!
+}
+
+type PublishDraftModuleResponseV2 {
+  id: String!
+  version: ModuleVersionResponse!
+}
+
+type PublishDraftModuleResponseV3 {
+  id: String!
+  publishReviewId: String
+  version: ModuleVersionResponse
+}
+
+type Purchase {
+  """
+  Non-null if this purchase type is recurring and the subscription has been cancelled
+  """
+  cancelledAt: Long
+  module: PurchaseModule!
+  moduleId: ID!
+  purchaseId: ID!
+  purchasedAt: Long!
+  status: PurchaseStatus!
+  type: PurchaseType!
+}
+
+type PurchaseEdge {
+  node: Purchase!
+}
+
+union PurchaseModule = MarketplaceModule | ModuleDeletedMessage
+
+enum PurchaseStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PurchaseType {
+  ONE_TIME
+  RECURRING
+}
+
+type PurchasesConnection {
+  edges: [PurchaseEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Query {
+  appTile(input: AppTileInput!): AppTile!
+  appTiles(after: String, first: Int): AppTileConnection!
+  connectAccount: ConnectAccount
+  consent(input: ConsentInput!): Consent!
+  consents(input: ConsentsInput!): ConsentConnection!
+
+  """
+  Returns true if the calling user has installed the provided module version
+  """
+  doesMyInstallExist(input: DoesInstallExistInput!): Boolean!
+  doesMyReviewExist_v2(input: DoesMyReviewExistInput!): DoesMyReviewExistResponse!
+  domainOntologies(after: String, first: Int): DomainOntologiesConnection!
+  domainOntology(input: DomainOntologyInput!): DomainOntology
+  draftModule(moduleId: ID!): DraftMarketplaceModule!
+  draftModuleInManualReview(moduleId: ID!): DraftMarketplaceModule!
+  draftModules(after: String, first: Int, input: DraftModulesInput!): DraftMarketplaceModuleConnection!
+  draftModulesInManualReview(after: String, first: Int, input: DraftModulesInManualReviewInput!): DraftMarketplaceModuleConnection!
+  insightsLayout(input: InsightsLayoutInput!): InsightsLayout!
+  insightsLayouts(after: String, first: Int, input: InsightsLayoutsInput): InsightsLayoutConnection!
+
+  """Returns true if the calling user is the owner of the module"""
+  isMyModule(moduleId: ID!, version: String): Boolean!
+  licensedModule(moduleId: ID!, version: String): MarketplaceModule!
+  licensedModules(after: String, first: Int, input: LicensedModulesInput!): MarketplaceModulesConnection!
+  module(moduleId: ID!, version: String): MarketplaceModule!
+  modulePublishReview(id: ID!, moduleId: ID!): ModulePublishReview!
+  modulePublishReviews(after: String, first: Int, moduleId: ID!): ModulePublishReviewsConnection!
+  moduleStats(input: ModuleStatsInput!): ModuleStatsResponse!
+  moduleTags(after: String, first: Int, input: ModuleTagsInput!): MarketplaceModuleTagsConnection!
+  modules(after: String, first: Int, input: ModulesInput!): MarketplaceModulesConnection!
+  myInstall(installId: ID!, installedOn: Long!): Install!
+  myInstalls(
+    after: String
+    first: Int
+    input: InstallsInput
+
+    """The sort order (based on install date)"""
+    sort: SortOrder
+  ): InstallConnection!
+  myModule(moduleId: ID!, version: String): MarketplaceModule!
+  myModules(after: String, first: Int, input: ModulesInput!): MarketplaceModulesConnection!
+
+  """
+  Returns the current active modules that the user has access to
+  
+  If provided, `type` filters the results to those of just that type.
+  
+  By default, this query returns all purchases. However, specifying `status`
+  will allow you to filter purchases to just those that are active or inactive.
+  """
+  myPurchases(after: String, first: Int, status: PurchaseStatus, type: PurchaseType): PurchasesConnection!
+  notebook(input: NotebookInput!): Notebook!
+  notebooks(after: String, first: Int): NotebookConnection!
+  orgInstall(installId: ID!, installedOn: Long!): Install!
+  orgInstalls(
+    after: String
+    first: Int
+    input: InstallsInput
+
+    """The sort order (based on install date)"""
+    sort: SortOrder
+  ): InstallConnection!
+  orgModule(moduleId: ID!, version: String): MarketplaceModule!
+  orgModuleTags(after: String, first: Int, input: OrgModuleTagsInput!): MarketplaceModuleTagsConnection!
+  orgModules(after: String, first: Int, input: OrgModulesInput!): MarketplaceModulesConnection!
+  patientLayout(input: PatientLayoutInput!): PatientLayout!
+  patientLayouts(after: String, first: Int, input: PatientLayoutsInput): PatientLayoutConnection!
+  processOntologies(after: String, first: Int): ProcessOntologiesConnection!
+  processOntology(input: ProcessOntologyInput!): ProcessOntology
+  programEnrollment(input: ProgramEnrollmentInput!): ProgramEnrollment!
+  programEnrollments(after: String, first: Int, input: ProgramEnrollmentsInput!): ProgramEnrollmentConnection!
+  programTemplate(input: ProgramTemplateInput!): ProgramTemplate!
+  programTemplates(after: String, first: Int, input: ProgramTemplatesInput!): ProgramTemplateConnection!
+  projects(after: String, first: Int, input: ProjectsInput): ProjectsConnection!
+  reportExtractor(input: OcrReportExtractorInput!): OcrReportExtractor!
+  reportExtractors(input: OcrReportExtractorsInput): OcrReportExtractorConnection!
+  searchLayout(input: SearchLayoutInput!): SearchLayout!
+  searchLayouts(after: String, first: Int, input: SearchLayoutsInput): SearchLayoutConnection!
+  survey(input: SurveyInput!): Survey!
+  surveys(after: String, first: Int, input: SurveysInput!): SurveyConnection!
+  userPurchasedModule(moduleId: ID!): UserPurchasedModuleResponse!
+  workflow(input: WorkflowInput!): Workflow!
+  workflows(after: String, first: Int): WorkflowConnection!
+}
+
+type QuestionnaireCode {
+  code: String
+  system: String
+}
+
+type QuestionnaireItem {
+  code: [QuestionnaireCode!]
+  initialBoolean: Boolean
+  linkId: String
+  modifierExtension: [QuestionnaireModifierExtension!]
+  required: Boolean
+  text: String
+  type: String
+}
+
+type QuestionnaireModifierExtension {
+  url: String
+  valueString: String
+}
+
+type ReactionTotal {
+  count: Int!
+  type: Emoji!
+  url: String
+  userHasReacted: Boolean
+}
+
+input RemoveDraftModuleIconV2Input {
+  moduleId: ID!
+}
+
+type RemoveDraftModuleIconV2Response {
+  moduleId: ID!
+}
+
+input RemoveDraftModulePreviewImagesV2Input {
+  fileExtension: String!
+  fileName: String!
+  moduleId: ID!
+}
+
+type RemoveDraftModulePreviewImagesV2Response {
+  moduleId: ID!
+}
+
+input RemoveMarketplaceReviewInput {
+  moduleId: ID!
+}
+
+input RemoveMarketplaceReviewReplyInput {
+  moduleId: ID!
+  ratingId: ID!
+  replyId: ID
+}
+
+input RemoveMarketplaceReviewReplyInput_v2 {
+  moduleId: ID!
+  ratingId: ID!
+  replyId: ID!
+}
+
+input RemoveReviewInput {
+  entityId: ID!
+  ratingId: ID!
+}
+
+input RemoveReviewReplyInput {
+  entityId: ID!
+  ratingId: ID!
+  replyId: ID!
+}
+
+type ReportExtractor {
+  description: String!
+  name: String!
+}
+
+input ReportExtractorModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+type Review {
+  comment: Post
+  commentId: ID
+  createdAt: Date!
+  displayName: String
+  entityId: ID!
+  entityType: EntityType!
+  entityVersion: String
+  id: ID!
+  lastUpdatedAt: Date!
+  rating: Int!
+  userId: ID!
+}
+
+type ReviewConnection {
+  edges: [ReviewEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ReviewEdge {
+  node: Review!
+}
+
+type SearchLayout {
+  account: String!
+  description: String
+  id: String!
+  name: String!
+  project: String!
+  rank: Int!
+  type: ModuleCategory!
+}
+
+type SearchLayoutConnection {
+  edges: [SearchLayoutEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SearchLayoutEdge {
+  node: SearchLayout!
+}
+
+input SearchLayoutInput {
+  id: String!
+  project: String!
+}
+
+input SearchLayoutModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+input SearchLayoutsInput {
+  project: String
+}
+
+type SetAppTileDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetConsentDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: ConsentModuleSourceInfo
+}
+
+type SetConsentLayoutDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetDraftModuleDomainOntologySourceInput {
+  moduleId: ID!
+  sourceInfo: DomainOntologyModuleSourceInfo
+}
+
+type SetDraftModuleDomainOntologySourceResponse {
+  id: String!
+}
+
+input SetDraftModuleProcessOntologySourceInput {
+  moduleId: ID!
+  sourceInfo: ProcessOntologyModuleSourceInfo
+}
+
+type SetDraftModuleProcessOntologySourceResponse {
+  id: String!
+}
+
+input SetDraftModuleWellnessOfferingSourceInput {
+  moduleId: ID!
+  sourceInfo: WellnessOfferingModuleSourceInfo
+}
+
+type SetDraftModuleWellnessOfferingSourceResponse {
+  id: String!
+}
+
+input SetInsightsLayoutDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: InsightsLayoutModuleSourceInfo
+}
+
+type SetInsightsLayoutDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetNotebookDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: NotebookModuleSourceInfo
+}
+
+type SetNotebookDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetOrgAppTileDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: OrgAppTileModuleSourceInfo
+}
+
+input SetPatientLayoutDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: PatientLayoutModuleSourceInfo
+}
+
+type SetPatientLayoutDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetProgramEnrollmentDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: ProgramEnrollmentModuleSourceInfo
+}
+
+type SetProgramEnrollmentDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetProgramTemplateDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: ProgramTemplateModuleSourceInfo
+}
+
+type SetProgramTemplateDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetPublicAppTileDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: PublicAppTileModuleSourceInfo
+}
+
+input SetReportExtractorDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: ReportExtractorModuleSourceInfo
+}
+
+type SetReportExtractorDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetSearchLayoutDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: SearchLayoutModuleSourceInfo
+}
+
+type SetSearchLayoutDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetSurveyDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: SurveyModuleSourceInfo
+}
+
+type SetSurveyLayoutDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+input SetWorkflowDraftModuleSourceInput {
+  moduleId: ID!
+  sourceInfo: WorkflowModuleSourceInfo
+}
+
+type SetWorkflowDraftModuleSourceResponse {
+  moduleId: ID!
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+input StartUploadInput {
+  fileName: String!
+}
+
+type StartUploadResponse {
+  fields: JSON!
+  id: ID!
+  url: String!
+}
+
+type Survey {
+  account: String!
+  date: String!
+  description: String
+  id: String!
+  item: [QuestionnaireItem!]!
+  meta: SurveyMeta!
+  project: String!
+  status: String!
+  subjectType: [String!]!
+  title: String
+  type: ModuleCategory!
+  version: String!
+}
+
+type SurveyConnection {
+  edges: [SurveyEdge!]!
+  pageInfo: PageInfo!
+}
+
+type SurveyEdge {
+  node: Survey!
+}
+
+input SurveyInput {
+  id: String!
+  project: String!
+}
+
+type SurveyMeta {
+  tag: [SurveyTag!]!
+}
+
+input SurveyModuleSourceInfo {
+  id: ID!
+  project: ID!
+}
+
+type SurveyTag {
+  code: String
+  system: String
+}
+
+input SurveysInput {
+  project: String!
+}
+
+input UpdateDraftModuleInput {
+  description: String
+  icon: Upload
+  languages: [String!]
+  moduleId: ID!
+  parentModuleId: ID
+  previewImages: [FileWithDescription!]
+  previewVideoUrls: [String!]
+  prices: [DraftModulePriceInput!]
+  products: [ModuleProduct!]
+  support: String
+  tags: [String!]
+  title: String
+  websiteUrl: String
+}
+
+input UpdateDraftModulePreviewImagesV2Input {
+  """Pass in `null` to remove the description"""
+  description: String
+  fileExtension: String!
+  fileName: String!
+  moduleId: ID!
+
+  """Pass in `null` to remove the priority"""
+  priority: Int
+}
+
+type UpdateDraftModulePreviewImagesV2Response {
+  moduleId: ID!
+}
+
+type UpdateDraftModuleResponse {
+  id: String!
+}
+
+input UpdateMarketplaceReviewInput {
+  comment: String
+  moduleId: ID!
+  rating: Int
+}
+
+input UpdateMarketplaceReviewReplyInput {
+  comment: String!
+  moduleId: ID!
+  ratingId: ID!
+}
+
+input UpdateMarketplaceReviewReplyInput_v2 {
+  comment: String!
+  moduleId: ID!
+  ratingId: ID!
+  replyId: ID!
+}
+
+input UpdateReviewInput {
+  comment: String
+  entityId: ID!
+  id: ID!
+  rating: Int
+}
+
+input UpdateReviewReplyInput {
+  comment: String!
+  entityId: ID!
+  ratingId: ID!
+  replyId: ID!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+enum UploadType {
+  ICON
+  PREVIEW_IMAGE
+}
+
+type UserPurchasedModuleResponse {
+  purchase: Purchase
+  purchased: Boolean!
+}
+
+type VersionsConnection {
+  edges: [VersionsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type VersionsEdge {
+  node: String!
+}
+
+type VersionsV2Connection {
+  edges: [VersionsV2Edge!]!
+  pageInfo: PageInfo!
+}
+
+type VersionsV2Edge {
+  node: VersionsV2Node!
+}
+
+type VersionsV2Node {
+  changeLog: String
+  created: Long!
+  version: String!
+}
+
+type WellnessOffering {
+  """The approximate per-redemption cost of the offering in pennies."""
+  approximateUnitCost: Int!
+
+  """The configuration schema for this offering, as a JSON blob."""
+  configurationSchema: String!
+  id: String!
+
+  """A URL of a marketing image for the offering."""
+  imageUrl: String!
+
+  """A link to more information about the offering."""
+  infoUrl: String!
+
+  """The name of the provider of this offering."""
+  provider: String!
+  type: ModuleCategory!
+}
+
+type WellnessOfferingConnection {
+  edges: [WellnessOfferingEdge!]!
+  pageInfo: PageInfo!
+}
+
+type WellnessOfferingEdge {
+  node: WellnessOffering!
+}
+
+input WellnessOfferingInput {
+  id: String!
+}
+
+input WellnessOfferingModuleSourceInfo {
+  """The approximate per-redemption cost of the offering in pennies."""
+  approximateUnitCost: Int!
+
+  """The configuration schema for this offering, as a JSON blob."""
+  configurationSchema: String!
+
+  """A URL of a marketing image for the offering."""
+  imageUrl: String!
+
+  """A link to more information about the offering."""
+  infoUrl: String!
+
+  """
+  A URL to send install events to. This should be the url of a service that manages
+  the offering, and can be an Alpha-compatible internal lambda url (e.g. lambda://ulta-service:deployed).
+  """
+  installUrl: String!
+
+  """The name of the provider of this offering."""
+  provider: String!
+}
+
+type Workflow {
+  description: String!
+  id: String!
+  meta_version: String!
+  name: String!
+  organization: String!
+  type: ModuleCategory!
+  url: String!
+}
+
+type WorkflowConnection {
+  edges: [WorkflowEdge!]!
+  pageInfo: PageInfo!
+}
+
+type WorkflowEdge {
+  node: Workflow!
+}
+
+input WorkflowInput {
+  id: ID!
+  version: String!
+}
+
+input WorkflowModuleSourceInfo {
+  id: ID!
+  version: String!
+}

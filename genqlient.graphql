@@ -1,0 +1,17 @@
+query GetPublishedModule($id: ID!, $version: String) {
+  myModule(moduleId: $id, version: $version) {
+    title
+    description
+    version
+    source {
+      ... on AppTile {
+        id
+      }
+    }
+    iconV2 {
+      url
+      fileName
+      fileExtension
+    }
+  }
+}

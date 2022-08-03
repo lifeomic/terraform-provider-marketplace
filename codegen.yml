@@ -1,0 +1,7 @@
+overwrite: true
+schema:
+  - "./schemas/*.json"
+generates:
+  ./schema.graphql:
+    plugins:
+      - schema-ast
