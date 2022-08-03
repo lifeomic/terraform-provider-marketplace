@@ -78,18 +78,6 @@ const FINALIZE_IMAGE_UPLOAD = `
   }
 `
 
-type payload struct {
-	Headers               map[string]string `json:"headers"`
-	Path                  string            `json:"path"`
-	HttpMethod            string            `json:"httpMethod"`
-	QueryStringParameters map[string]string `json:"queryStringParameters"`
-	Body                  string            `json:"body"`
-}
-
-type policy struct {
-	Rules map[string]bool `json:"rules"`
-}
-
 const GRAPHQL_URL = "marketplace-service:deployed/v1/marketplace/authenticated/graphql"
 
 type MarketplaceClient struct {
@@ -110,8 +98,8 @@ type appTileModule struct {
 	}
 }
 
-func (self *MarketplaceClient) getAppTileModule(id string) (*appTileModule, error) {
-	res, err := self.phcClient.Gql(GRAPHQL_URL, GET_PUBLISHED_APP_TILE_MODULE, map[string]interface{}{"id": id})
+func (marketplace *MarketplaceClient) getAppTileModule(id string) (*appTileModule, error) {
+	res, err := marketplace.phcClient.Gql(GRAPHQL_URL, GET_PUBLISHED_APP_TILE_MODULE, map[string]interface{}{"id": id})
 	if err != nil {
 		return nil, err
 	}
@@ -178,9 +166,9 @@ func postImageToUrl(url string, image string, file_name string, fields map[strin
 	return nil
 }
 
-func (self *MarketplaceClient) attachImageToDraftModule(moduleId string, image string) error {
+func (marketplace *MarketplaceClient) attachImageToDraftModule(moduleId string, image string) error {
 	fileName := path.Base(image)
-	startResponse, err := self.phcClient.Gql(GRAPHQL_URL, START_IMAGE_UPLOAD, map[string]interface{}{
+	startResponse, err := marketplace.phcClient.Gql(GRAPHQL_URL, START_IMAGE_UPLOAD, map[string]interface{}{
 		"input": map[string]interface{}{
 			"fileName": fileName,
 		},
@@ -205,7 +193,7 @@ func (self *MarketplaceClient) attachImageToDraftModule(moduleId string, image s
 		return err
 	}
 
-	finalizeResponse, err := self.phcClient.Gql(GRAPHQL_URL, FINALIZE_IMAGE_UPLOAD, map[string]interface{}{
+	finalizeResponse, err := marketplace.phcClient.Gql(GRAPHQL_URL, FINALIZE_IMAGE_UPLOAD, map[string]interface{}{
 		"input": map[string]string{
 			"id":       startData.StartUpload.Id,
 			"moduleId": moduleId,
@@ -227,8 +215,8 @@ func (self *MarketplaceClient) attachImageToDraftModule(moduleId string, image s
 	return err
 }
 
-func (self *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*string, error) {
-	res, err := self.phcClient.Gql(GRAPHQL_URL, CREATE_DRAFT_MODULE, map[string]interface{}{"input": map[string]interface{}{
+func (marketplace *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*string, error) {
+	res, err := marketplace.phcClient.Gql(GRAPHQL_URL, CREATE_DRAFT_MODULE, map[string]interface{}{"input": map[string]interface{}{
 		"title":       params.Name,
 		"description": params.Description,
 		// "iconV2":         params.Image, // Use upload
@@ -253,7 +241,7 @@ func (self *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*
 
 	moduleId := createDraftData.CreateDraftModule.Id
 
-	res, err = self.phcClient.Gql(GRAPHQL_URL, SET_APP_TILE, map[string]interface{}{"input": map[string]interface{}{
+	res, err = marketplace.phcClient.Gql(GRAPHQL_URL, SET_APP_TILE, map[string]interface{}{"input": map[string]interface{}{
 		"moduleId": moduleId,
 		"sourceInfo": map[string]string{
 			"id": params.AppTileId,
@@ -274,7 +262,7 @@ func (self *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*
 		return nil, err
 	}
 
-	err = self.attachImageToDraftModule(moduleId, params.Image)
+	err = marketplace.attachImageToDraftModule(moduleId, params.Image)
 
 	if err != nil {
 		return nil, err
@@ -283,12 +271,12 @@ func (self *MarketplaceClient) createAppTileDraftModule(params appTileCreate) (*
 	return &moduleId, nil
 }
 
-func (self *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (*string, error) {
-	draftModuleId, err := self.createAppTileDraftModule(params)
+func (marketplace *MarketplaceClient) publishNewAppTileModule(params appTileCreate) (*string, error) {
+	draftModuleId, err := marketplace.createAppTileDraftModule(params)
 	if err != nil {
 		return nil, err
 	}
-	publishRes, err := self.phcClient.Gql(GRAPHQL_URL, PUBLISH_MODULE, map[string]interface{}{"input": map[string]interface{}{
+	publishRes, err := marketplace.phcClient.Gql(GRAPHQL_URL, PUBLISH_MODULE, map[string]interface{}{"input": map[string]interface{}{
 		"moduleId": draftModuleId,
 		"version": map[string]string{
 			"version": params.Version,

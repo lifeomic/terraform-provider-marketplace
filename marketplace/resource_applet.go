@@ -21,6 +21,9 @@ func getHash(url string) (*string, error) {
 	}
 	body := &bytes.Buffer{}
 	_, err = body.ReadFrom(res.Body)
+	if err != nil {
+		return nil, err
+	}
 
 	hash := md5.Sum(body.Bytes())
 	text := hex.EncodeToString(hash[:])
@@ -47,7 +50,7 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if app == nil {
-		return errors.New("No Module Found")
+		return errors.New("no Module Found")
 	}
 
 	if app.IconV2 != nil {
@@ -72,7 +75,7 @@ func createAppTile(d *schema.ResourceData, meta interface{}) error {
 	_, versionExists := d.GetOk("version")
 	if !versionExists {
 		if !d.Get("auto_version").(bool) {
-			return errors.New("If you don't specify a version, you must use auto_version")
+			return errors.New("if you don't specify a version, you must use auto_version")
 		}
 		d.Set("version", "0.0.0")
 	}
