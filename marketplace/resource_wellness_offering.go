@@ -48,11 +48,11 @@ func wellnessOfferingResource() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"imageUrl": {
+			"image_url": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"infoUrl": {
+			"info_url": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
