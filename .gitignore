@@ -5,3 +5,5 @@ terraform.tfstate.backup
 dist
 
 terraform-provider-marketplace
+
+node_modules/

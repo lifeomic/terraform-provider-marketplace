@@ -1,0 +1,14 @@
+{
+  "name": "terraform-provider-marketplace",
+  "version": "1.0.0",
+  "main": "",
+  "repository": "git@github.com:lifeomic/terraform-provider-marketplace.git",
+  "author": "oss@lifeomic.com",
+  "license": "MIT",
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.11.3",
+    "@graphql-codegen/schema-ast": "^2.5.0",
+    "graphql": "^16.5.0",
+    "typescript": "^4.7.4"
+  }
+}

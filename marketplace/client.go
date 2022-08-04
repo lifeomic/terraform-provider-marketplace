@@ -13,6 +13,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+//go:generate go run github.com/Khan/genqlient
+
 const GET_PUBLISHED_APP_TILE_MODULE = `
   query GetPublishedModule($id: ID!, $version: String) {
     myModule(moduleId: $id, version: $version) {

@@ -50,3 +50,15 @@ testacc:
 lint:
 	staticcheck ./...
 	go vet ./...
+
+.PHONY: fetch-schema
+fetch-schema:
+	lifeomic-fetch-individual-graphql-schemas -s marketplace,marketplaceAuthed
+
+.PHONY: generate-schema
+generate-schema:
+	yarn graphql-codegen
+
+.PHONY: graphql
+graphql: fetch-schema generate-schema
+	cd marketplace && go generate
