@@ -10,46 +10,42 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
-// GetPublishedModuleMyModuleMarketplaceModule includes the requested fields of the GraphQL type MarketplaceModule.
-type GetPublishedModuleMyModuleMarketplaceModule struct {
-	Title       string                                                                  `json:"title"`
-	Description string                                                                  `json:"description"`
-	Version     string                                                                  `json:"version"`
-	Source      GetPublishedModuleMyModuleMarketplaceModuleSource                       `json:"-"`
-	IconV2      GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage `json:"iconV2"`
+// AppTileModule includes the GraphQL fields of MarketplaceModule requested by the fragment AppTileModule.
+type AppTileModule struct {
+	Title       string                                     `json:"title"`
+	Description string                                     `json:"description"`
+	Version     string                                     `json:"version"`
+	Source      AppTileModuleSourceMarketplaceModuleSource `json:"-"`
+	IconV2      *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
 }
 
-// GetTitle returns GetPublishedModuleMyModuleMarketplaceModule.Title, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModule) GetTitle() string { return v.Title }
+// GetTitle returns AppTileModule.Title, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetTitle() string { return v.Title }
 
-// GetDescription returns GetPublishedModuleMyModuleMarketplaceModule.Description, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModule) GetDescription() string { return v.Description }
+// GetDescription returns AppTileModule.Description, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetDescription() string { return v.Description }
 
-// GetVersion returns GetPublishedModuleMyModuleMarketplaceModule.Version, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModule) GetVersion() string { return v.Version }
+// GetVersion returns AppTileModule.Version, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetVersion() string { return v.Version }
 
-// GetSource returns GetPublishedModuleMyModuleMarketplaceModule.Source, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModule) GetSource() GetPublishedModuleMyModuleMarketplaceModuleSource {
-	return v.Source
-}
+// GetSource returns AppTileModule.Source, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetSource() AppTileModuleSourceMarketplaceModuleSource { return v.Source }
 
-// GetIconV2 returns GetPublishedModuleMyModuleMarketplaceModule.IconV2, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModule) GetIconV2() GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage {
-	return v.IconV2
-}
+// GetIconV2 returns AppTileModule.IconV2, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetIconV2() *AppTileModuleIconV2MarketplaceModuleImage { return v.IconV2 }
 
-func (v *GetPublishedModuleMyModuleMarketplaceModule) UnmarshalJSON(b []byte) error {
+func (v *AppTileModule) UnmarshalJSON(b []byte) error {
 
 	if string(b) == "null" {
 		return nil
 	}
 
 	var firstPass struct {
-		*GetPublishedModuleMyModuleMarketplaceModule
+		*AppTileModule
 		Source json.RawMessage `json:"source"`
 		graphql.NoUnmarshalJSON
 	}
-	firstPass.GetPublishedModuleMyModuleMarketplaceModule = v
+	firstPass.AppTileModule = v
 
 	err := json.Unmarshal(b, &firstPass)
 	if err != nil {
@@ -60,18 +56,18 @@ func (v *GetPublishedModuleMyModuleMarketplaceModule) UnmarshalJSON(b []byte) er
 		dst := &v.Source
 		src := firstPass.Source
 		if len(src) != 0 && string(src) != "null" {
-			err = __unmarshalGetPublishedModuleMyModuleMarketplaceModuleSource(
+			err = __unmarshalAppTileModuleSourceMarketplaceModuleSource(
 				src, dst)
 			if err != nil {
 				return fmt.Errorf(
-					"Unable to unmarshal GetPublishedModuleMyModuleMarketplaceModule.Source: %w", err)
+					"Unable to unmarshal AppTileModule.Source: %w", err)
 			}
 		}
 	}
 	return nil
 }
 
-type __premarshalGetPublishedModuleMyModuleMarketplaceModule struct {
+type __premarshalAppTileModule struct {
 	Title string `json:"title"`
 
 	Description string `json:"description"`
@@ -80,10 +76,10 @@ type __premarshalGetPublishedModuleMyModuleMarketplaceModule struct {
 
 	Source json.RawMessage `json:"source"`
 
-	IconV2 GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage `json:"iconV2"`
+	IconV2 *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
 }
 
-func (v *GetPublishedModuleMyModuleMarketplaceModule) MarshalJSON() ([]byte, error) {
+func (v *AppTileModule) MarshalJSON() ([]byte, error) {
 	premarshaled, err := v.__premarshalJSON()
 	if err != nil {
 		return nil, err
@@ -91,8 +87,8 @@ func (v *GetPublishedModuleMyModuleMarketplaceModule) MarshalJSON() ([]byte, err
 	return json.Marshal(premarshaled)
 }
 
-func (v *GetPublishedModuleMyModuleMarketplaceModule) __premarshalJSON() (*__premarshalGetPublishedModuleMyModuleMarketplaceModule, error) {
-	var retval __premarshalGetPublishedModuleMyModuleMarketplaceModule
+func (v *AppTileModule) __premarshalJSON() (*__premarshalAppTileModule, error) {
+	var retval __premarshalAppTileModule
 
 	retval.Title = v.Title
 	retval.Description = v.Description
@@ -102,92 +98,122 @@ func (v *GetPublishedModuleMyModuleMarketplaceModule) __premarshalJSON() (*__pre
 		dst := &retval.Source
 		src := v.Source
 		var err error
-		*dst, err = __marshalGetPublishedModuleMyModuleMarketplaceModuleSource(
+		*dst, err = __marshalAppTileModuleSourceMarketplaceModuleSource(
 			&src)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"Unable to marshal GetPublishedModuleMyModuleMarketplaceModule.Source: %w", err)
+				"Unable to marshal AppTileModule.Source: %w", err)
 		}
 	}
 	retval.IconV2 = v.IconV2
 	return &retval, nil
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage includes the requested fields of the GraphQL type MarketplaceModuleImage.
-type GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage struct {
+// AppTileModuleIconV2MarketplaceModuleImage includes the requested fields of the GraphQL type MarketplaceModuleImage.
+type AppTileModuleIconV2MarketplaceModuleImage struct {
 	Url           string `json:"url"`
 	FileName      string `json:"fileName"`
 	FileExtension string `json:"fileExtension"`
 }
 
-// GetUrl returns GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage.Url, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage) GetUrl() string {
-	return v.Url
+// GetUrl returns AppTileModuleIconV2MarketplaceModuleImage.Url, and is useful for accessing the field via an interface.
+func (v *AppTileModuleIconV2MarketplaceModuleImage) GetUrl() string { return v.Url }
+
+// GetFileName returns AppTileModuleIconV2MarketplaceModuleImage.FileName, and is useful for accessing the field via an interface.
+func (v *AppTileModuleIconV2MarketplaceModuleImage) GetFileName() string { return v.FileName }
+
+// GetFileExtension returns AppTileModuleIconV2MarketplaceModuleImage.FileExtension, and is useful for accessing the field via an interface.
+func (v *AppTileModuleIconV2MarketplaceModuleImage) GetFileExtension() string { return v.FileExtension }
+
+// AppTileModuleSourceAppTile includes the requested fields of the GraphQL type AppTile.
+type AppTileModuleSourceAppTile struct {
+	Typename string `json:"__typename"`
+	Id       string `json:"id"`
 }
 
-// GetFileName returns GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage.FileName, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage) GetFileName() string {
-	return v.FileName
+// GetTypename returns AppTileModuleSourceAppTile.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceAppTile) GetTypename() string { return v.Typename }
+
+// GetId returns AppTileModuleSourceAppTile.Id, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceAppTile) GetId() string { return v.Id }
+
+// AppTileModuleSourceConsent includes the requested fields of the GraphQL type Consent.
+type AppTileModuleSourceConsent struct {
+	Typename string `json:"__typename"`
 }
 
-// GetFileExtension returns GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage.FileExtension, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleIconV2MarketplaceModuleImage) GetFileExtension() string {
-	return v.FileExtension
+// GetTypename returns AppTileModuleSourceConsent.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceConsent) GetTypename() string { return v.Typename }
+
+// AppTileModuleSourceDomainOntology includes the requested fields of the GraphQL type DomainOntology.
+type AppTileModuleSourceDomainOntology struct {
+	Typename string `json:"__typename"`
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSource includes the requested fields of the GraphQL interface MarketplaceModuleSource.
+// GetTypename returns AppTileModuleSourceDomainOntology.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceDomainOntology) GetTypename() string { return v.Typename }
+
+// AppTileModuleSourceInsightsLayout includes the requested fields of the GraphQL type InsightsLayout.
+type AppTileModuleSourceInsightsLayout struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns AppTileModuleSourceInsightsLayout.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceInsightsLayout) GetTypename() string { return v.Typename }
+
+// AppTileModuleSourceMarketplaceModuleSource includes the requested fields of the GraphQL interface MarketplaceModuleSource.
 //
-// GetPublishedModuleMyModuleMarketplaceModuleSource is implemented by the following types:
-// GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile
-// GetPublishedModuleMyModuleMarketplaceModuleSourceConsent
-// GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology
-// GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout
-// GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook
-// GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor
-// GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate
-// GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout
-// GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey
-// GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering
-// GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow
-type GetPublishedModuleMyModuleMarketplaceModuleSource interface {
-	implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource()
+// AppTileModuleSourceMarketplaceModuleSource is implemented by the following types:
+// AppTileModuleSourceAppTile
+// AppTileModuleSourceConsent
+// AppTileModuleSourceDomainOntology
+// AppTileModuleSourceInsightsLayout
+// AppTileModuleSourceNotebook
+// AppTileModuleSourceOcrReportExtractor
+// AppTileModuleSourcePatientLayout
+// AppTileModuleSourceProcessOntology
+// AppTileModuleSourceProgramEnrollment
+// AppTileModuleSourceProgramTemplate
+// AppTileModuleSourceSearchLayout
+// AppTileModuleSourceSurvey
+// AppTileModuleSourceWellnessOffering
+// AppTileModuleSourceWorkflow
+type AppTileModuleSourceMarketplaceModuleSource interface {
+	implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource()
 	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
 	GetTypename() string
 }
 
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceAppTile) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceConsent) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceConsent) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceDomainOntology) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceInsightsLayout) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceNotebook) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceOcrReportExtractor) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourcePatientLayout) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceProcessOntology) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceProgramEnrollment) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceProgramTemplate) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceSearchLayout) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceSurvey) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceWellnessOffering) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow) implementsGraphQLInterfaceGetPublishedModuleMyModuleMarketplaceModuleSource() {
+func (v *AppTileModuleSourceWorkflow) implementsGraphQLInterfaceAppTileModuleSourceMarketplaceModuleSource() {
 }
 
-func __unmarshalGetPublishedModuleMyModuleMarketplaceModuleSource(b []byte, v *GetPublishedModuleMyModuleMarketplaceModuleSource) error {
+func __unmarshalAppTileModuleSourceMarketplaceModuleSource(b []byte, v *AppTileModuleSourceMarketplaceModuleSource) error {
 	if string(b) == "null" {
 		return nil
 	}
@@ -202,322 +228,505 @@ func __unmarshalGetPublishedModuleMyModuleMarketplaceModuleSource(b []byte, v *G
 
 	switch tn.TypeName {
 	case "AppTile":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile)
+		*v = new(AppTileModuleSourceAppTile)
 		return json.Unmarshal(b, *v)
 	case "Consent":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceConsent)
+		*v = new(AppTileModuleSourceConsent)
 		return json.Unmarshal(b, *v)
 	case "DomainOntology":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology)
+		*v = new(AppTileModuleSourceDomainOntology)
 		return json.Unmarshal(b, *v)
 	case "InsightsLayout":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout)
+		*v = new(AppTileModuleSourceInsightsLayout)
 		return json.Unmarshal(b, *v)
 	case "Notebook":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook)
+		*v = new(AppTileModuleSourceNotebook)
 		return json.Unmarshal(b, *v)
 	case "OcrReportExtractor":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor)
+		*v = new(AppTileModuleSourceOcrReportExtractor)
 		return json.Unmarshal(b, *v)
 	case "PatientLayout":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout)
+		*v = new(AppTileModuleSourcePatientLayout)
 		return json.Unmarshal(b, *v)
 	case "ProcessOntology":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology)
+		*v = new(AppTileModuleSourceProcessOntology)
 		return json.Unmarshal(b, *v)
 	case "ProgramEnrollment":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment)
+		*v = new(AppTileModuleSourceProgramEnrollment)
 		return json.Unmarshal(b, *v)
 	case "ProgramTemplate":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate)
+		*v = new(AppTileModuleSourceProgramTemplate)
 		return json.Unmarshal(b, *v)
 	case "SearchLayout":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout)
+		*v = new(AppTileModuleSourceSearchLayout)
 		return json.Unmarshal(b, *v)
 	case "Survey":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey)
+		*v = new(AppTileModuleSourceSurvey)
 		return json.Unmarshal(b, *v)
 	case "WellnessOffering":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering)
+		*v = new(AppTileModuleSourceWellnessOffering)
 		return json.Unmarshal(b, *v)
 	case "Workflow":
-		*v = new(GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow)
+		*v = new(AppTileModuleSourceWorkflow)
 		return json.Unmarshal(b, *v)
 	case "":
 		return fmt.Errorf(
 			"response was missing MarketplaceModuleSource.__typename")
 	default:
 		return fmt.Errorf(
-			`unexpected concrete type for GetPublishedModuleMyModuleMarketplaceModuleSource: "%v"`, tn.TypeName)
+			`unexpected concrete type for AppTileModuleSourceMarketplaceModuleSource: "%v"`, tn.TypeName)
 	}
 }
 
-func __marshalGetPublishedModuleMyModuleMarketplaceModuleSource(v *GetPublishedModuleMyModuleMarketplaceModuleSource) ([]byte, error) {
+func __marshalAppTileModuleSourceMarketplaceModuleSource(v *AppTileModuleSourceMarketplaceModuleSource) ([]byte, error) {
 
 	var typename string
 	switch v := (*v).(type) {
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile:
+	case *AppTileModuleSourceAppTile:
 		typename = "AppTile"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile
+			*AppTileModuleSourceAppTile
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceConsent:
+	case *AppTileModuleSourceConsent:
 		typename = "Consent"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceConsent
+			*AppTileModuleSourceConsent
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology:
+	case *AppTileModuleSourceDomainOntology:
 		typename = "DomainOntology"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology
+			*AppTileModuleSourceDomainOntology
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout:
+	case *AppTileModuleSourceInsightsLayout:
 		typename = "InsightsLayout"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout
+			*AppTileModuleSourceInsightsLayout
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook:
+	case *AppTileModuleSourceNotebook:
 		typename = "Notebook"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook
+			*AppTileModuleSourceNotebook
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor:
+	case *AppTileModuleSourceOcrReportExtractor:
 		typename = "OcrReportExtractor"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor
+			*AppTileModuleSourceOcrReportExtractor
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout:
+	case *AppTileModuleSourcePatientLayout:
 		typename = "PatientLayout"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout
+			*AppTileModuleSourcePatientLayout
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology:
+	case *AppTileModuleSourceProcessOntology:
 		typename = "ProcessOntology"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology
+			*AppTileModuleSourceProcessOntology
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment:
+	case *AppTileModuleSourceProgramEnrollment:
 		typename = "ProgramEnrollment"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment
+			*AppTileModuleSourceProgramEnrollment
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate:
+	case *AppTileModuleSourceProgramTemplate:
 		typename = "ProgramTemplate"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate
+			*AppTileModuleSourceProgramTemplate
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout:
+	case *AppTileModuleSourceSearchLayout:
 		typename = "SearchLayout"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout
+			*AppTileModuleSourceSearchLayout
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey:
+	case *AppTileModuleSourceSurvey:
 		typename = "Survey"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey
+			*AppTileModuleSourceSurvey
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering:
+	case *AppTileModuleSourceWellnessOffering:
 		typename = "WellnessOffering"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering
+			*AppTileModuleSourceWellnessOffering
 		}{typename, v}
 		return json.Marshal(result)
-	case *GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow:
+	case *AppTileModuleSourceWorkflow:
 		typename = "Workflow"
 
 		result := struct {
 			TypeName string `json:"__typename"`
-			*GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow
+			*AppTileModuleSourceWorkflow
 		}{typename, v}
 		return json.Marshal(result)
 	case nil:
 		return []byte("null"), nil
 	default:
 		return nil, fmt.Errorf(
-			`unexpected concrete type for GetPublishedModuleMyModuleMarketplaceModuleSource: "%T"`, v)
+			`unexpected concrete type for AppTileModuleSourceMarketplaceModuleSource: "%T"`, v)
 	}
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile includes the requested fields of the GraphQL type AppTile.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile struct {
-	Typename string `json:"__typename"`
-	Id       string `json:"id"`
-}
-
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile) GetTypename() string {
-	return v.Typename
-}
-
-// GetId returns GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile.Id, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceAppTile) GetId() string { return v.Id }
-
-// GetPublishedModuleMyModuleMarketplaceModuleSourceConsent includes the requested fields of the GraphQL type Consent.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceConsent struct {
+// AppTileModuleSourceNotebook includes the requested fields of the GraphQL type Notebook.
+type AppTileModuleSourceNotebook struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceConsent.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceConsent) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceNotebook.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceNotebook) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology includes the requested fields of the GraphQL type DomainOntology.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology struct {
+// AppTileModuleSourceOcrReportExtractor includes the requested fields of the GraphQL type OcrReportExtractor.
+type AppTileModuleSourceOcrReportExtractor struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceDomainOntology) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceOcrReportExtractor.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceOcrReportExtractor) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout includes the requested fields of the GraphQL type InsightsLayout.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout struct {
+// AppTileModuleSourcePatientLayout includes the requested fields of the GraphQL type PatientLayout.
+type AppTileModuleSourcePatientLayout struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceInsightsLayout) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourcePatientLayout.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourcePatientLayout) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook includes the requested fields of the GraphQL type Notebook.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook struct {
+// AppTileModuleSourceProcessOntology includes the requested fields of the GraphQL type ProcessOntology.
+type AppTileModuleSourceProcessOntology struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceNotebook) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceProcessOntology.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceProcessOntology) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor includes the requested fields of the GraphQL type OcrReportExtractor.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor struct {
+// AppTileModuleSourceProgramEnrollment includes the requested fields of the GraphQL type ProgramEnrollment.
+type AppTileModuleSourceProgramEnrollment struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceOcrReportExtractor) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceProgramEnrollment.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceProgramEnrollment) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout includes the requested fields of the GraphQL type PatientLayout.
-type GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout struct {
+// AppTileModuleSourceProgramTemplate includes the requested fields of the GraphQL type ProgramTemplate.
+type AppTileModuleSourceProgramTemplate struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourcePatientLayout) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceProgramTemplate.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceProgramTemplate) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology includes the requested fields of the GraphQL type ProcessOntology.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology struct {
+// AppTileModuleSourceSearchLayout includes the requested fields of the GraphQL type SearchLayout.
+type AppTileModuleSourceSearchLayout struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProcessOntology) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceSearchLayout.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceSearchLayout) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment includes the requested fields of the GraphQL type ProgramEnrollment.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment struct {
+// AppTileModuleSourceSurvey includes the requested fields of the GraphQL type Survey.
+type AppTileModuleSourceSurvey struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramEnrollment) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceSurvey.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceSurvey) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate includes the requested fields of the GraphQL type ProgramTemplate.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate struct {
+// AppTileModuleSourceWellnessOffering includes the requested fields of the GraphQL type WellnessOffering.
+type AppTileModuleSourceWellnessOffering struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceProgramTemplate) GetTypename() string {
-	return v.Typename
-}
+// GetTypename returns AppTileModuleSourceWellnessOffering.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceWellnessOffering) GetTypename() string { return v.Typename }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout includes the requested fields of the GraphQL type SearchLayout.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout struct {
+// AppTileModuleSourceWorkflow includes the requested fields of the GraphQL type Workflow.
+type AppTileModuleSourceWorkflow struct {
 	Typename string `json:"__typename"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceSearchLayout) GetTypename() string {
-	return v.Typename
+// GetTypename returns AppTileModuleSourceWorkflow.Typename, and is useful for accessing the field via an interface.
+func (v *AppTileModuleSourceWorkflow) GetTypename() string { return v.Typename }
+
+// CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse includes the requested fields of the GraphQL type CreateDraftModuleResponse.
+type CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse struct {
+	Id string `json:"id"`
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey includes the requested fields of the GraphQL type Survey.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey struct {
-	Typename string `json:"__typename"`
+// GetId returns CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse.Id, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse) GetId() string { return v.Id }
+
+type CreateDraftModuleInput struct {
+	Category    ModuleCategory `json:"category"`
+	Description string         `json:"description"`
+	Icon        string         `json:"icon"`
+	// A unique identifier to use for the new module. If not provided, one will be generated.
+	Id               string                  `json:"id"`
+	Languages        []string                `json:"languages"`
+	LicenseDetails   LicenseDetailsInput     `json:"licenseDetails"`
+	ParentModuleId   string                  `json:"parentModuleId"`
+	PreviewImages    []FileWithDescription   `json:"previewImages"`
+	PreviewVideoUrls []string                `json:"previewVideoUrls"`
+	Prices           []DraftModulePriceInput `json:"prices"`
+	Products         []ModuleProduct         `json:"products"`
+	Scope            MarketplaceModuleScope  `json:"scope"`
+	Support          string                  `json:"support"`
+	Tags             []string                `json:"tags"`
+	Title            string                  `json:"title"`
+	WebsiteUrl       string                  `json:"websiteUrl"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceSurvey) GetTypename() string {
-	return v.Typename
+// GetCategory returns CreateDraftModuleInput.Category, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetCategory() ModuleCategory { return v.Category }
+
+// GetDescription returns CreateDraftModuleInput.Description, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetDescription() string { return v.Description }
+
+// GetIcon returns CreateDraftModuleInput.Icon, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetIcon() string { return v.Icon }
+
+// GetId returns CreateDraftModuleInput.Id, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetId() string { return v.Id }
+
+// GetLanguages returns CreateDraftModuleInput.Languages, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetLanguages() []string { return v.Languages }
+
+// GetLicenseDetails returns CreateDraftModuleInput.LicenseDetails, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetLicenseDetails() LicenseDetailsInput { return v.LicenseDetails }
+
+// GetParentModuleId returns CreateDraftModuleInput.ParentModuleId, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetParentModuleId() string { return v.ParentModuleId }
+
+// GetPreviewImages returns CreateDraftModuleInput.PreviewImages, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetPreviewImages() []FileWithDescription { return v.PreviewImages }
+
+// GetPreviewVideoUrls returns CreateDraftModuleInput.PreviewVideoUrls, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetPreviewVideoUrls() []string { return v.PreviewVideoUrls }
+
+// GetPrices returns CreateDraftModuleInput.Prices, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetPrices() []DraftModulePriceInput { return v.Prices }
+
+// GetProducts returns CreateDraftModuleInput.Products, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetProducts() []ModuleProduct { return v.Products }
+
+// GetScope returns CreateDraftModuleInput.Scope, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetScope() MarketplaceModuleScope { return v.Scope }
+
+// GetSupport returns CreateDraftModuleInput.Support, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetSupport() string { return v.Support }
+
+// GetTags returns CreateDraftModuleInput.Tags, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetTags() []string { return v.Tags }
+
+// GetTitle returns CreateDraftModuleInput.Title, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetTitle() string { return v.Title }
+
+// GetWebsiteUrl returns CreateDraftModuleInput.WebsiteUrl, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleInput) GetWebsiteUrl() string { return v.WebsiteUrl }
+
+// CreateDraftModuleResponse is returned by CreateDraftModule on success.
+type CreateDraftModuleResponse struct {
+	CreateDraftModule CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse `json:"createDraftModule"`
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering includes the requested fields of the GraphQL type WellnessOffering.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering struct {
-	Typename string `json:"__typename"`
+// GetCreateDraftModule returns CreateDraftModuleResponse.CreateDraftModule, and is useful for accessing the field via an interface.
+func (v *CreateDraftModuleResponse) GetCreateDraftModule() CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse {
+	return v.CreateDraftModule
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceWellnessOffering) GetTypename() string {
-	return v.Typename
+type DraftModulePriceInput struct {
+	// Amount in pennies USD
+	Amount   int             `json:"amount"`
+	Interval PaymentInterval `json:"interval"`
 }
 
-// GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow includes the requested fields of the GraphQL type Workflow.
-type GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow struct {
-	Typename string `json:"__typename"`
+// GetAmount returns DraftModulePriceInput.Amount, and is useful for accessing the field via an interface.
+func (v *DraftModulePriceInput) GetAmount() int { return v.Amount }
+
+// GetInterval returns DraftModulePriceInput.Interval, and is useful for accessing the field via an interface.
+func (v *DraftModulePriceInput) GetInterval() PaymentInterval { return v.Interval }
+
+type FileWithDescription struct {
+	Description string `json:"description"`
+	File        string `json:"file"`
 }
 
-// GetTypename returns GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow.Typename, and is useful for accessing the field via an interface.
-func (v *GetPublishedModuleMyModuleMarketplaceModuleSourceWorkflow) GetTypename() string {
-	return v.Typename
+// GetDescription returns FileWithDescription.Description, and is useful for accessing the field via an interface.
+func (v *FileWithDescription) GetDescription() string { return v.Description }
+
+// GetFile returns FileWithDescription.File, and is useful for accessing the field via an interface.
+func (v *FileWithDescription) GetFile() string { return v.File }
+
+// FinalizeImageUploadFinalizeUploadFinalizeUploadResponse includes the requested fields of the GraphQL type FinalizeUploadResponse.
+type FinalizeImageUploadFinalizeUploadFinalizeUploadResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+
+// GetModuleId returns FinalizeImageUploadFinalizeUploadFinalizeUploadResponse.ModuleId, and is useful for accessing the field via an interface.
+func (v *FinalizeImageUploadFinalizeUploadFinalizeUploadResponse) GetModuleId() string {
+	return v.ModuleId
+}
+
+// FinalizeImageUploadResponse is returned by FinalizeImageUpload on success.
+type FinalizeImageUploadResponse struct {
+	FinalizeUpload FinalizeImageUploadFinalizeUploadFinalizeUploadResponse `json:"finalizeUpload"`
+}
+
+// GetFinalizeUpload returns FinalizeImageUploadResponse.FinalizeUpload, and is useful for accessing the field via an interface.
+func (v *FinalizeImageUploadResponse) GetFinalizeUpload() FinalizeImageUploadFinalizeUploadFinalizeUploadResponse {
+	return v.FinalizeUpload
+}
+
+type FinalizeUploadInput struct {
+	Description string     `json:"description"`
+	Id          string     `json:"id"`
+	ModuleId    string     `json:"moduleId"`
+	Priority    int        `json:"priority"`
+	Type        UploadType `json:"type"`
+}
+
+// GetDescription returns FinalizeUploadInput.Description, and is useful for accessing the field via an interface.
+func (v *FinalizeUploadInput) GetDescription() string { return v.Description }
+
+// GetId returns FinalizeUploadInput.Id, and is useful for accessing the field via an interface.
+func (v *FinalizeUploadInput) GetId() string { return v.Id }
+
+// GetModuleId returns FinalizeUploadInput.ModuleId, and is useful for accessing the field via an interface.
+func (v *FinalizeUploadInput) GetModuleId() string { return v.ModuleId }
+
+// GetPriority returns FinalizeUploadInput.Priority, and is useful for accessing the field via an interface.
+func (v *FinalizeUploadInput) GetPriority() int { return v.Priority }
+
+// GetType returns FinalizeUploadInput.Type, and is useful for accessing the field via an interface.
+func (v *FinalizeUploadInput) GetType() UploadType { return v.Type }
+
+// GetPublishedModuleMyModuleMarketplaceModule includes the requested fields of the GraphQL type MarketplaceModule.
+type GetPublishedModuleMyModuleMarketplaceModule struct {
+	AppTileModule `json:"-"`
+}
+
+// GetTitle returns GetPublishedModuleMyModuleMarketplaceModule.Title, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetTitle() string { return v.AppTileModule.Title }
+
+// GetDescription returns GetPublishedModuleMyModuleMarketplaceModule.Description, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetDescription() string {
+	return v.AppTileModule.Description
+}
+
+// GetVersion returns GetPublishedModuleMyModuleMarketplaceModule.Version, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetVersion() string {
+	return v.AppTileModule.Version
+}
+
+// GetSource returns GetPublishedModuleMyModuleMarketplaceModule.Source, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetSource() AppTileModuleSourceMarketplaceModuleSource {
+	return v.AppTileModule.Source
+}
+
+// GetIconV2 returns GetPublishedModuleMyModuleMarketplaceModule.IconV2, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetIconV2() *AppTileModuleIconV2MarketplaceModuleImage {
+	return v.AppTileModule.IconV2
+}
+
+func (v *GetPublishedModuleMyModuleMarketplaceModule) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetPublishedModuleMyModuleMarketplaceModule
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetPublishedModuleMyModuleMarketplaceModule = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.AppTileModule)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalGetPublishedModuleMyModuleMarketplaceModule struct {
+	Title string `json:"title"`
+
+	Description string `json:"description"`
+
+	Version string `json:"version"`
+
+	Source json.RawMessage `json:"source"`
+
+	IconV2 *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
+}
+
+func (v *GetPublishedModuleMyModuleMarketplaceModule) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetPublishedModuleMyModuleMarketplaceModule) __premarshalJSON() (*__premarshalGetPublishedModuleMyModuleMarketplaceModule, error) {
+	var retval __premarshalGetPublishedModuleMyModuleMarketplaceModule
+
+	retval.Title = v.AppTileModule.Title
+	retval.Description = v.AppTileModule.Description
+	retval.Version = v.AppTileModule.Version
+	{
+
+		dst := &retval.Source
+		src := v.AppTileModule.Source
+		var err error
+		*dst, err = __marshalAppTileModuleSourceMarketplaceModuleSource(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Unable to marshal GetPublishedModuleMyModuleMarketplaceModule.AppTileModule.Source: %w", err)
+		}
+	}
+	retval.IconV2 = v.AppTileModule.IconV2
+	return &retval, nil
 }
 
 // GetPublishedModuleResponse is returned by GetPublishedModule on success.
@@ -529,6 +738,229 @@ type GetPublishedModuleResponse struct {
 func (v *GetPublishedModuleResponse) GetMyModule() GetPublishedModuleMyModuleMarketplaceModule {
 	return v.MyModule
 }
+
+type LicenseDetailsInput struct {
+	Message string `json:"message"`
+	Url     string `json:"url"`
+}
+
+// GetMessage returns LicenseDetailsInput.Message, and is useful for accessing the field via an interface.
+func (v *LicenseDetailsInput) GetMessage() string { return v.Message }
+
+// GetUrl returns LicenseDetailsInput.Url, and is useful for accessing the field via an interface.
+func (v *LicenseDetailsInput) GetUrl() string { return v.Url }
+
+type MarketplaceModuleScope string
+
+const (
+	MarketplaceModuleScopeLicensed     MarketplaceModuleScope = "LICENSED"
+	MarketplaceModuleScopeOrganization MarketplaceModuleScope = "ORGANIZATION"
+	MarketplaceModuleScopePublic       MarketplaceModuleScope = "PUBLIC"
+)
+
+type ModuleCategory string
+
+const (
+	ModuleCategoryAppTile             ModuleCategory = "APP_TILE"
+	ModuleCategoryConsent             ModuleCategory = "CONSENT"
+	ModuleCategoryDomainOntology      ModuleCategory = "DOMAIN_ONTOLOGY"
+	ModuleCategoryInsightsLayout      ModuleCategory = "INSIGHTS_LAYOUT"
+	ModuleCategoryNotebook            ModuleCategory = "NOTEBOOK"
+	ModuleCategoryPatientViewerLayout ModuleCategory = "PATIENT_VIEWER_LAYOUT"
+	ModuleCategoryProcessOntology     ModuleCategory = "PROCESS_ONTOLOGY"
+	ModuleCategoryProgramEnrollment   ModuleCategory = "PROGRAM_ENROLLMENT"
+	ModuleCategoryProgramTemplate     ModuleCategory = "PROGRAM_TEMPLATE"
+	ModuleCategoryReportExtractor     ModuleCategory = "REPORT_EXTRACTOR"
+	ModuleCategorySearchLayout        ModuleCategory = "SEARCH_LAYOUT"
+	ModuleCategorySurvey              ModuleCategory = "SURVEY"
+	ModuleCategoryWellnessOffering    ModuleCategory = "WELLNESS_OFFERING"
+	ModuleCategoryWorkflow            ModuleCategory = "WORKFLOW"
+)
+
+type ModuleProduct string
+
+const (
+	ModuleProductLifeology         ModuleProduct = "LIFEOLOGY"
+	ModuleProductLifeExtendApp     ModuleProduct = "LIFE_EXTEND_APP"
+	ModuleProductLifeFastingApp    ModuleProduct = "LIFE_FASTING_APP"
+	ModuleProductLifeMobileApps    ModuleProduct = "LIFE_MOBILE_APPS"
+	ModuleProductOcr               ModuleProduct = "OCR"
+	ModuleProductPhc               ModuleProduct = "PHC"
+	ModuleProductPrecisionOutcomes ModuleProduct = "PRECISION_OUTCOMES"
+	ModuleProductPrecisionWellness ModuleProduct = "PRECISION_WELLNESS"
+	ModuleProductSkillspring       ModuleProduct = "SKILLSPRING"
+)
+
+type ModuleVersionInput struct {
+	ChangeLog string `json:"changeLog"`
+	Version   string `json:"version"`
+}
+
+// GetChangeLog returns ModuleVersionInput.ChangeLog, and is useful for accessing the field via an interface.
+func (v *ModuleVersionInput) GetChangeLog() string { return v.ChangeLog }
+
+// GetVersion returns ModuleVersionInput.Version, and is useful for accessing the field via an interface.
+func (v *ModuleVersionInput) GetVersion() string { return v.Version }
+
+type PaymentInterval string
+
+const (
+	PaymentIntervalFree    PaymentInterval = "FREE"
+	PaymentIntervalMonthly PaymentInterval = "MONTHLY"
+	PaymentIntervalOnce    PaymentInterval = "ONCE"
+	PaymentIntervalYearly  PaymentInterval = "YEARLY"
+)
+
+type PublicAppTileModuleSourceInfo struct {
+	Id string `json:"id"`
+}
+
+// GetId returns PublicAppTileModuleSourceInfo.Id, and is useful for accessing the field via an interface.
+func (v *PublicAppTileModuleSourceInfo) GetId() string { return v.Id }
+
+type PublishDraftModuleInputV2 struct {
+	IsTestModule bool               `json:"isTestModule"`
+	ModuleId     string             `json:"moduleId"`
+	ShowAuthor   bool               `json:"showAuthor"`
+	Version      ModuleVersionInput `json:"version"`
+}
+
+// GetIsTestModule returns PublishDraftModuleInputV2.IsTestModule, and is useful for accessing the field via an interface.
+func (v *PublishDraftModuleInputV2) GetIsTestModule() bool { return v.IsTestModule }
+
+// GetModuleId returns PublishDraftModuleInputV2.ModuleId, and is useful for accessing the field via an interface.
+func (v *PublishDraftModuleInputV2) GetModuleId() string { return v.ModuleId }
+
+// GetShowAuthor returns PublishDraftModuleInputV2.ShowAuthor, and is useful for accessing the field via an interface.
+func (v *PublishDraftModuleInputV2) GetShowAuthor() bool { return v.ShowAuthor }
+
+// GetVersion returns PublishDraftModuleInputV2.Version, and is useful for accessing the field via an interface.
+func (v *PublishDraftModuleInputV2) GetVersion() ModuleVersionInput { return v.Version }
+
+// PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2 includes the requested fields of the GraphQL type PublishDraftModuleResponseV2.
+type PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2 struct {
+	Id      string                                                                                    `json:"id"`
+	Version PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse `json:"version"`
+}
+
+// GetId returns PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2.Id, and is useful for accessing the field via an interface.
+func (v *PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2) GetId() string { return v.Id }
+
+// GetVersion returns PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2.Version, and is useful for accessing the field via an interface.
+func (v *PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2) GetVersion() PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse {
+	return v.Version
+}
+
+// PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse includes the requested fields of the GraphQL type ModuleVersionResponse.
+type PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse struct {
+	Version string `json:"version"`
+}
+
+// GetVersion returns PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse.Version, and is useful for accessing the field via an interface.
+func (v *PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2VersionModuleVersionResponse) GetVersion() string {
+	return v.Version
+}
+
+// PublishModuleResponse is returned by PublishModule on success.
+type PublishModuleResponse struct {
+	PublishDraftModuleV2 PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2 `json:"publishDraftModuleV2"`
+}
+
+// GetPublishDraftModuleV2 returns PublishModuleResponse.PublishDraftModuleV2, and is useful for accessing the field via an interface.
+func (v *PublishModuleResponse) GetPublishDraftModuleV2() PublishModulePublishDraftModuleV2PublishDraftModuleResponseV2 {
+	return v.PublishDraftModuleV2
+}
+
+// SetAppTileResponse is returned by SetAppTile on success.
+type SetAppTileResponse struct {
+	SetPublicAppTileDraftModuleSource SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse `json:"setPublicAppTileDraftModuleSource"`
+}
+
+// GetSetPublicAppTileDraftModuleSource returns SetAppTileResponse.SetPublicAppTileDraftModuleSource, and is useful for accessing the field via an interface.
+func (v *SetAppTileResponse) GetSetPublicAppTileDraftModuleSource() SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse {
+	return v.SetPublicAppTileDraftModuleSource
+}
+
+// SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse includes the requested fields of the GraphQL type SetAppTileDraftModuleSourceResponse.
+type SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+
+// GetModuleId returns SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse.ModuleId, and is useful for accessing the field via an interface.
+func (v *SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse) GetModuleId() string {
+	return v.ModuleId
+}
+
+type SetPublicAppTileDraftModuleSourceInput struct {
+	ModuleId   string                        `json:"moduleId"`
+	SourceInfo PublicAppTileModuleSourceInfo `json:"sourceInfo"`
+}
+
+// GetModuleId returns SetPublicAppTileDraftModuleSourceInput.ModuleId, and is useful for accessing the field via an interface.
+func (v *SetPublicAppTileDraftModuleSourceInput) GetModuleId() string { return v.ModuleId }
+
+// GetSourceInfo returns SetPublicAppTileDraftModuleSourceInput.SourceInfo, and is useful for accessing the field via an interface.
+func (v *SetPublicAppTileDraftModuleSourceInput) GetSourceInfo() PublicAppTileModuleSourceInfo {
+	return v.SourceInfo
+}
+
+// StartImageUploadResponse is returned by StartImageUpload on success.
+type StartImageUploadResponse struct {
+	StartUpload StartImageUploadStartUploadStartUploadResponse `json:"startUpload"`
+}
+
+// GetStartUpload returns StartImageUploadResponse.StartUpload, and is useful for accessing the field via an interface.
+func (v *StartImageUploadResponse) GetStartUpload() StartImageUploadStartUploadStartUploadResponse {
+	return v.StartUpload
+}
+
+// StartImageUploadStartUploadStartUploadResponse includes the requested fields of the GraphQL type StartUploadResponse.
+type StartImageUploadStartUploadStartUploadResponse struct {
+	Id     string            `json:"id"`
+	Url    string            `json:"url"`
+	Fields map[string]string `json:"fields"`
+}
+
+// GetId returns StartImageUploadStartUploadStartUploadResponse.Id, and is useful for accessing the field via an interface.
+func (v *StartImageUploadStartUploadStartUploadResponse) GetId() string { return v.Id }
+
+// GetUrl returns StartImageUploadStartUploadStartUploadResponse.Url, and is useful for accessing the field via an interface.
+func (v *StartImageUploadStartUploadStartUploadResponse) GetUrl() string { return v.Url }
+
+// GetFields returns StartImageUploadStartUploadStartUploadResponse.Fields, and is useful for accessing the field via an interface.
+func (v *StartImageUploadStartUploadStartUploadResponse) GetFields() map[string]string {
+	return v.Fields
+}
+
+type StartUploadInput struct {
+	FileName string `json:"fileName"`
+}
+
+// GetFileName returns StartUploadInput.FileName, and is useful for accessing the field via an interface.
+func (v *StartUploadInput) GetFileName() string { return v.FileName }
+
+type UploadType string
+
+const (
+	UploadTypeIcon         UploadType = "ICON"
+	UploadTypePreviewImage UploadType = "PREVIEW_IMAGE"
+)
+
+// __CreateDraftModuleInput is used internally by genqlient
+type __CreateDraftModuleInput struct {
+	Input CreateDraftModuleInput `json:"input"`
+}
+
+// GetInput returns __CreateDraftModuleInput.Input, and is useful for accessing the field via an interface.
+func (v *__CreateDraftModuleInput) GetInput() CreateDraftModuleInput { return v.Input }
+
+// __FinalizeImageUploadInput is used internally by genqlient
+type __FinalizeImageUploadInput struct {
+	Input FinalizeUploadInput `json:"input"`
+}
+
+// GetInput returns __FinalizeImageUploadInput.Input, and is useful for accessing the field via an interface.
+func (v *__FinalizeImageUploadInput) GetInput() FinalizeUploadInput { return v.Input }
 
 // __GetPublishedModuleInput is used internally by genqlient
 type __GetPublishedModuleInput struct {
@@ -542,6 +974,94 @@ func (v *__GetPublishedModuleInput) GetId() string { return v.Id }
 // GetVersion returns __GetPublishedModuleInput.Version, and is useful for accessing the field via an interface.
 func (v *__GetPublishedModuleInput) GetVersion() string { return v.Version }
 
+// __PublishModuleInput is used internally by genqlient
+type __PublishModuleInput struct {
+	Input PublishDraftModuleInputV2 `json:"input"`
+}
+
+// GetInput returns __PublishModuleInput.Input, and is useful for accessing the field via an interface.
+func (v *__PublishModuleInput) GetInput() PublishDraftModuleInputV2 { return v.Input }
+
+// __SetAppTileInput is used internally by genqlient
+type __SetAppTileInput struct {
+	Input SetPublicAppTileDraftModuleSourceInput `json:"input"`
+}
+
+// GetInput returns __SetAppTileInput.Input, and is useful for accessing the field via an interface.
+func (v *__SetAppTileInput) GetInput() SetPublicAppTileDraftModuleSourceInput { return v.Input }
+
+// __StartImageUploadInput is used internally by genqlient
+type __StartImageUploadInput struct {
+	Input StartUploadInput `json:"input"`
+}
+
+// GetInput returns __StartImageUploadInput.Input, and is useful for accessing the field via an interface.
+func (v *__StartImageUploadInput) GetInput() StartUploadInput { return v.Input }
+
+func CreateDraftModule(
+	ctx context.Context,
+	client graphql.Client,
+	input CreateDraftModuleInput,
+) (*CreateDraftModuleResponse, error) {
+	req := &graphql.Request{
+		OpName: "CreateDraftModule",
+		Query: `
+mutation CreateDraftModule ($input: CreateDraftModuleInput!) {
+	createDraftModule(input: $input) {
+		id
+	}
+}
+`,
+		Variables: &__CreateDraftModuleInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data CreateDraftModuleResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func FinalizeImageUpload(
+	ctx context.Context,
+	client graphql.Client,
+	input FinalizeUploadInput,
+) (*FinalizeImageUploadResponse, error) {
+	req := &graphql.Request{
+		OpName: "FinalizeImageUpload",
+		Query: `
+mutation FinalizeImageUpload ($input: FinalizeUploadInput!) {
+	finalizeUpload(input: $input) {
+		moduleId
+	}
+}
+`,
+		Variables: &__FinalizeImageUploadInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data FinalizeImageUploadResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
 func GetPublishedModule(
 	ctx context.Context,
 	client graphql.Client,
@@ -553,20 +1073,23 @@ func GetPublishedModule(
 		Query: `
 query GetPublishedModule ($id: ID!, $version: String) {
 	myModule(moduleId: $id, version: $version) {
-		title
-		description
-		version
-		source {
-			__typename
-			... on AppTile {
-				id
-			}
+		... AppTileModule
+	}
+}
+fragment AppTileModule on MarketplaceModule {
+	title
+	description
+	version
+	source {
+		__typename
+		... on AppTile {
+			id
 		}
-		iconV2 {
-			url
-			fileName
-			fileExtension
-		}
+	}
+	iconV2 {
+		url
+		fileName
+		fileExtension
 	}
 }
 `,
@@ -578,6 +1101,107 @@ query GetPublishedModule ($id: ID!, $version: String) {
 	var err error
 
 	var data GetPublishedModuleResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func PublishModule(
+	ctx context.Context,
+	client graphql.Client,
+	input PublishDraftModuleInputV2,
+) (*PublishModuleResponse, error) {
+	req := &graphql.Request{
+		OpName: "PublishModule",
+		Query: `
+mutation PublishModule ($input: PublishDraftModuleInputV2!) {
+	publishDraftModuleV2(input: $input) {
+		id
+		version {
+			version
+		}
+	}
+}
+`,
+		Variables: &__PublishModuleInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data PublishModuleResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func SetAppTile(
+	ctx context.Context,
+	client graphql.Client,
+	input SetPublicAppTileDraftModuleSourceInput,
+) (*SetAppTileResponse, error) {
+	req := &graphql.Request{
+		OpName: "SetAppTile",
+		Query: `
+mutation SetAppTile ($input: SetPublicAppTileDraftModuleSourceInput!) {
+	setPublicAppTileDraftModuleSource(input: $input) {
+		moduleId
+	}
+}
+`,
+		Variables: &__SetAppTileInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data SetAppTileResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func StartImageUpload(
+	ctx context.Context,
+	client graphql.Client,
+	input StartUploadInput,
+) (*StartImageUploadResponse, error) {
+	req := &graphql.Request{
+		OpName: "StartImageUpload",
+		Query: `
+mutation StartImageUpload ($input: StartUploadInput!) {
+	startUpload(input: $input) {
+		id
+		url
+		fields
+	}
+}
+`,
+		Variables: &__StartImageUploadInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data StartImageUploadResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

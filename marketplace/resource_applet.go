@@ -33,7 +33,7 @@ func getHash(url string) (*string, error) {
 func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
 	id := d.Id()
-	var app *appTileModule
+	var app *AppTileModule
 	retryCount := 2
 	for app == nil && retryCount > 0 {
 		inner, err := client.getAppTileModule(id)
@@ -65,8 +65,10 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("name", app.Title)
 	d.Set("description", app.Description)
-	d.Set("app_tile_id", app.Source.Id)
 	d.Set("version", app.Version)
+	if source, ok := app.Source.(*AppTileModuleSourceAppTile); ok {
+		d.Set("app_tile_id", source.Id)
+	}
 	return nil
 }
 
