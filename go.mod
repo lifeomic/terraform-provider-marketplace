@@ -6,8 +6,7 @@ require (
 	github.com/Khan/genqlient v0.5.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/hashicorp/terraform-plugin-sdk v1.17.2
-	github.com/lifeomic/phc-sdk-go v0.0.0-20220120003512-02bfe7bf9acc
-	github.com/mitchellh/mapstructure v1.4.3
+	github.com/lifeomic/phc-sdk-go v0.0.0-20220804200606-021f1ebc0466
 )
 
 require (
@@ -66,6 +65,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.4 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
+	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/oklog/run v1.0.0 // indirect
 	github.com/posener/complete v1.2.1 // indirect

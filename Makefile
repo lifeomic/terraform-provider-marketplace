@@ -59,6 +59,9 @@ fetch-schema:
 generate-schema:
 	yarn graphql-codegen
 
-.PHONY: graphql
-graphql: fetch-schema generate-schema
+.PHONY: go-generate
+go-generate:
 	cd marketplace && go generate
+
+.PHONY: graphql
+graphql: fetch-schema generate-schema go-generate
