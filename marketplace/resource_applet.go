@@ -2,9 +2,11 @@ package marketplace
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -120,7 +122,15 @@ func updateAppTile(d *schema.ResourceData, meta interface{}) error {
 }
 
 func deleteAppTile(d *schema.ResourceData, meta interface{}) error {
-	return errors.New("Unimplemented")
+	client := meta.(*MarketplaceClient).gqlClient
+	id := d.Id()
+
+	if _, err := DeleteModule(context.Background(), client, DeleteModuleInput{ModuleId: id}); err != nil {
+		return fmt.Errorf("failed to delete module %s: %w", id, err)
+	}
+
+	d.SetId("")
+	return nil
 }
 
 func appTileResource() *schema.Resource {

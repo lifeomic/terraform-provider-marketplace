@@ -568,6 +568,35 @@ func (v *CreateDraftModuleResponse) GetCreateDraftModule() CreateDraftModuleCrea
 	return v.CreateDraftModule
 }
 
+// DeleteModuleDeleteModuleDeleteModuleResponse includes the requested fields of the GraphQL type DeleteModuleResponse.
+type DeleteModuleDeleteModuleDeleteModuleResponse struct {
+	Id string `json:"id"`
+}
+
+// GetId returns DeleteModuleDeleteModuleDeleteModuleResponse.Id, and is useful for accessing the field via an interface.
+func (v *DeleteModuleDeleteModuleDeleteModuleResponse) GetId() string { return v.Id }
+
+type DeleteModuleInput struct {
+	ModuleId string `json:"moduleId"`
+	Version  string `json:"version"`
+}
+
+// GetModuleId returns DeleteModuleInput.ModuleId, and is useful for accessing the field via an interface.
+func (v *DeleteModuleInput) GetModuleId() string { return v.ModuleId }
+
+// GetVersion returns DeleteModuleInput.Version, and is useful for accessing the field via an interface.
+func (v *DeleteModuleInput) GetVersion() string { return v.Version }
+
+// DeleteModuleResponse is returned by DeleteModule on success.
+type DeleteModuleResponse struct {
+	DeleteModule DeleteModuleDeleteModuleDeleteModuleResponse `json:"deleteModule"`
+}
+
+// GetDeleteModule returns DeleteModuleResponse.DeleteModule, and is useful for accessing the field via an interface.
+func (v *DeleteModuleResponse) GetDeleteModule() DeleteModuleDeleteModuleDeleteModuleResponse {
+	return v.DeleteModule
+}
+
 type DraftModulePriceInput struct {
 	// Amount in pennies USD
 	Amount   int             `json:"amount"`
@@ -954,6 +983,14 @@ type __CreateDraftModuleInput struct {
 // GetInput returns __CreateDraftModuleInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreateDraftModuleInput) GetInput() CreateDraftModuleInput { return v.Input }
 
+// __DeleteModuleInput is used internally by genqlient
+type __DeleteModuleInput struct {
+	Input DeleteModuleInput `json:"input"`
+}
+
+// GetInput returns __DeleteModuleInput.Input, and is useful for accessing the field via an interface.
+func (v *__DeleteModuleInput) GetInput() DeleteModuleInput { return v.Input }
+
 // __FinalizeImageUploadInput is used internally by genqlient
 type __FinalizeImageUploadInput struct {
 	Input FinalizeUploadInput `json:"input"`
@@ -1019,6 +1056,38 @@ mutation CreateDraftModule ($input: CreateDraftModuleInput!) {
 	var err error
 
 	var data CreateDraftModuleResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func DeleteModule(
+	ctx context.Context,
+	client graphql.Client,
+	input DeleteModuleInput,
+) (*DeleteModuleResponse, error) {
+	req := &graphql.Request{
+		OpName: "DeleteModule",
+		Query: `
+mutation DeleteModule ($input: DeleteModuleInput!) {
+	deleteModule(input: $input) {
+		id
+	}
+}
+`,
+		Variables: &__DeleteModuleInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data DeleteModuleResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

@@ -26,6 +26,13 @@ mutation CreateDraftModule($input: CreateDraftModuleInput!) {
     id
   }
 }
+
+mutation DeleteModule($input: DeleteModuleInput!) {
+  deleteModule(input: $input) {
+    id
+  }
+}
+
 mutation SetAppTile($input: SetPublicAppTileDraftModuleSourceInput!) {
   setPublicAppTileDraftModuleSource(input: $input) {
     moduleId
