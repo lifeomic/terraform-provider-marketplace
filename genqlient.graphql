@@ -1,17 +1,55 @@
+fragment AppTileModule on MarketplaceModule {
+  title
+  description
+  version
+  source {
+    ... on AppTile {
+      id
+    }
+  }
+  # @genqlient(pointer: true)
+  iconV2 {
+    url
+    fileName
+    fileExtension
+  }
+}
+
 query GetPublishedModule($id: ID!, $version: String) {
   myModule(moduleId: $id, version: $version) {
-    title
-    description
-    version
-    source {
-      ... on AppTile {
-        id
-      }
+    ...AppTileModule
+  }
+}
+
+mutation CreateDraftModule($input: CreateDraftModuleInput!) {
+  createDraftModule(input: $input) {
+    id
+  }
+}
+mutation SetAppTile($input: SetPublicAppTileDraftModuleSourceInput!) {
+  setPublicAppTileDraftModuleSource(input: $input) {
+    moduleId
+  }
+}
+
+mutation PublishModule($input: PublishDraftModuleInputV2!) {
+  publishDraftModuleV2(input: $input) {
+    id
+    version {
+      version
     }
-    iconV2 {
-      url
-      fileName
-      fileExtension
-    }
+  }
+}
+mutation StartImageUpload($input: StartUploadInput!) {
+  startUpload(input: $input) {
+    id
+    url
+    fields
+  }
+}
+
+mutation FinalizeImageUpload($input: FinalizeUploadInput!) {
+  finalizeUpload(input: $input) {
+    moduleId
   }
 }
