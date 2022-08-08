@@ -53,7 +53,7 @@ lint:
 
 .PHONY: fetch-schema
 fetch-schema:
-	lifeomic-fetch-individual-graphql-schemas -s marketplace,marketplaceAuthed
+	lifeomic-fetch-individual-graphql-schemas -s marketplace,marketplaceAuthed,appStore
 
 .PHONY: generate-schema
 generate-schema:

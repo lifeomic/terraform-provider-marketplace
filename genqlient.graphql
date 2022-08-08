@@ -60,3 +60,14 @@ mutation FinalizeImageUpload($input: FinalizeUploadInput!) {
     moduleId
   }
 }
+
+mutation CreateAppStoreListing($input: CreateWebAppInput!) {
+  createWebApp(input: $input) {
+    id
+  }
+}
+
+mutation DeleteAppStoreListing($id: ID!) {
+  deleteApp(id: $id) 
+}
+

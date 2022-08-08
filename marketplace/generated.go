@@ -568,6 +568,14 @@ func (v *CreateDraftModuleResponse) GetCreateDraftModule() CreateDraftModuleCrea
 	return v.CreateDraftModule
 }
 
+// DeleteAppStoreListingResponse is returned by DeleteAppStoreListing on success.
+type DeleteAppStoreListingResponse struct {
+	DeleteApp bool `json:"deleteApp"`
+}
+
+// GetDeleteApp returns DeleteAppStoreListingResponse.DeleteApp, and is useful for accessing the field via an interface.
+func (v *DeleteAppStoreListingResponse) GetDeleteApp() bool { return v.DeleteApp }
+
 // DeleteModuleDeleteModuleDeleteModuleResponse includes the requested fields of the GraphQL type DeleteModuleResponse.
 type DeleteModuleDeleteModuleDeleteModuleResponse struct {
 	Id string `json:"id"`
@@ -983,6 +991,14 @@ type __CreateDraftModuleInput struct {
 // GetInput returns __CreateDraftModuleInput.Input, and is useful for accessing the field via an interface.
 func (v *__CreateDraftModuleInput) GetInput() CreateDraftModuleInput { return v.Input }
 
+// __DeleteAppStoreListingInput is used internally by genqlient
+type __DeleteAppStoreListingInput struct {
+	Id string `json:"id"`
+}
+
+// GetId returns __DeleteAppStoreListingInput.Id, and is useful for accessing the field via an interface.
+func (v *__DeleteAppStoreListingInput) GetId() string { return v.Id }
+
 // __DeleteModuleInput is used internally by genqlient
 type __DeleteModuleInput struct {
 	Input DeleteModuleInput `json:"input"`
@@ -1056,6 +1072,36 @@ mutation CreateDraftModule ($input: CreateDraftModuleInput!) {
 	var err error
 
 	var data CreateDraftModuleResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func DeleteAppStoreListing(
+	ctx context.Context,
+	client graphql.Client,
+	id string,
+) (*DeleteAppStoreListingResponse, error) {
+	req := &graphql.Request{
+		OpName: "DeleteAppStoreListing",
+		Query: `
+mutation DeleteAppStoreListing ($id: ID!) {
+	deleteApp(id: $id)
+}
+`,
+		Variables: &__DeleteAppStoreListingInput{
+			Id: id,
+		},
+	}
+	var err error
+
+	var data DeleteAppStoreListingResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(

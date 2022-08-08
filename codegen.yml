@@ -1,6 +1,6 @@
 overwrite: true
 schema:
-  - "./schemas/*.json"
+ - "./schemas/*.json"
 generates:
   ./schema.graphql:
     plugins:

@@ -19,6 +19,53 @@ type ActivePost implements Post {
   systemGenerated: Boolean!
 }
 
+input AppLocale {
+  description: String
+  langCode: String!
+  name: String!
+}
+
+interface AppStoreApplication {
+  abacResource: String
+
+  """Optional display string - used to display the author if not LifeOmic"""
+  authorDisplay: String
+  authorId: String!
+  description: String
+  id: ID!
+  image: URL
+  name: String!
+  product: AppStoreProduct!
+}
+
+type AppStoreApplicationConnection {
+  edges: [AppStoreApplicationEdge!]!
+  pageInfo: PageInfo!
+}
+
+type AppStoreApplicationEdge {
+  node: AppStoreApplication!
+}
+
+enum AppStoreProduct {
+  LX
+}
+
+"""a basic app meant to simply be loaded in a browser"""
+type AppStoreWebApplication implements AppStoreApplication {
+  abacResource: String
+
+  """Optional display string - used to display the author if not LifeOmic"""
+  authorDisplay: String
+  authorId: String!
+  description: String
+  id: ID!
+  image: URL
+  name: String!
+  product: AppStoreProduct!
+  url: URL!
+}
+
 type AppTile {
   description: String
   id: String
@@ -233,6 +280,18 @@ input CreateReviewReplyInput {
   ratingId: ID!
 }
 
+input CreateWebAppInput {
+  abacResource: String
+  authorDisplay: String
+  description: String
+  id: String
+  image: URL
+  locales: [AppLocale!]
+  name: String!
+  product: AppStoreProduct!
+  url: URL!
+}
+
 """An ISO-8601 date string."""
 scalar Date
 
@@ -385,11 +444,22 @@ input DraftModulesInput {
   status: DraftModuleStatus
 }
 
+input EditWebAppInput {
+  abacResource: String
+  authorDisplay: String
+  description: String
+  image: URL
+  locales: [AppLocale!]
+  name: String
+  url: URL
+}
+
 """Emoji custom scalar type"""
 scalar Emoji
 
 enum Entitlement {
   lifeAscent
+  lifeAscentLegacy
   lifePlus
 }
 
@@ -428,6 +498,11 @@ type FinalizeUploadResponse {
 input FloatRange {
   lower: Float
   upper: Float
+}
+
+input GenerateWebAppFromManifestInput {
+  manifestPath: String
+  url: String!
 }
 
 input GetBillingPortalLinkInput {
@@ -664,6 +739,11 @@ type InstallSurveyModuleResponse {
   version: String!
 }
 
+input InstallWebAppInput {
+  appId: ID!
+  userId: String!
+}
+
 input InstallWellnessOfferingModuleInput {
   """The configuration to install for this offering, as a JSON blob."""
   configuration: String!
@@ -720,6 +800,17 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 """
 scalar JSONObject
 
+type LaunchUrlTileBehavior {
+  """
+  The custom web app client ID that is used by the linked tile.
+  Providing this value allows for clients (e.g. LX) to automatically
+  provide authentication credentials for the current user when launching
+  the app.
+  """
+  appClientId: String
+  url: URL!
+}
+
 type LicenseDetails {
   message: String
   url: String!
@@ -734,6 +825,27 @@ input LicensedModulesInput {
   category: ModuleCategory
   search: String
   tags: [String!]
+}
+
+input ListAppsInput {
+  """pagination: last page token"""
+  after: String
+
+  """pagination: number of elements to retrieve"""
+  first: Int
+  product: AppStoreProduct!
+}
+
+input ListInstalledAppsInput {
+  """pagination: last page token"""
+  after: String
+
+  """pagination: number of elements to retrieve"""
+  first: Int
+  product: AppStoreProduct!
+
+  """current user to filter by"""
+  userId: String!
 }
 
 """The `Long` scalar type represents 52-bit integers"""
@@ -960,9 +1072,12 @@ type Mutation {
   createMarketplaceReview(input: CreateMarketplaceReviewInput!): Review!
   createMarketplaceReviewReply(input: CreateMarketplaceReviewReplyInput!): Review!
   createModuleCheckoutSession(input: CreateModuleCheckoutSessionInput!): CreateModuleCheckoutSessionResponse!
+  createWebApp(input: CreateWebAppInput!): AppStoreWebApplication!
+  deleteApp(id: ID!): Boolean!
   deleteDraftModule(moduleId: ID!): DeleteDraftModuleResponse!
   deleteModule(input: DeleteModuleInput!): DeleteModuleResponse!
   denyModulePublish(input: DenyModulePublishInput!): DenyModulePublishResponse!
+  editWebApp(edits: EditWebAppInput!, id: ID!): Boolean!
   finalizeUpload(input: FinalizeUploadInput!): FinalizeUploadResponse!
   getBillingPortalLink(input: GetBillingPortalLinkInput!): GetBillingPortalLinkResponse!
   getConnectAccountLink(input: GetConnectAccountLinkInput!): GetConnectAccountLinkResponse!
@@ -981,6 +1096,7 @@ type Mutation {
   installReportExtractorModule(input: InstallReportExtractorModuleInput!): InstallReportExtractorModuleResponse!
   installSearchLayoutModule(input: InstallSearchLayoutModuleInput!): InstallSearchLayoutModuleResponse!
   installSurveyModule(input: InstallSurveyModuleInput!): InstallSurveyModuleResponse!
+  installWebApp(input: InstallWebAppInput!): AppStoreWebApplication!
   installWellnessOfferingModule(input: InstallWellnessOfferingModuleInput!): InstallWellnessOfferingModuleResponse!
   installWorkflowModule(input: InstallWorkflowModuleInput!): InstallWorkflowModuleResponse!
   publishDraftModule(input: PublishDraftModuleInput!): PublishDraftModuleResponse! @deprecated(reason: "Use `publishDraftModuleV2` instead")
@@ -1016,6 +1132,7 @@ type Mutation {
   setWellnessOfferingDraftModuleSource(input: SetDraftModuleWellnessOfferingSourceInput!): SetDraftModuleWellnessOfferingSourceResponse!
   setWorkflowDraftModuleSource(input: SetWorkflowDraftModuleSourceInput!): SetWorkflowDraftModuleSourceResponse!
   startUpload(input: StartUploadInput!): StartUploadResponse!
+  uninstallWebApp(input: UninstallWebAppInput!): Boolean!
   updateDraftModule(input: UpdateDraftModuleInput!): UpdateDraftModuleResponse!
 
   """
@@ -1404,8 +1521,10 @@ type PurchasesConnection {
 }
 
 type Query {
+  app(id: ID!): AppStoreApplication
   appTile(input: AppTileInput!): AppTile!
   appTiles(after: String, first: Int): AppTileConnection!
+  apps(input: ListAppsInput!): AppStoreApplicationConnection!
   connectAccount: ConnectAccount
   consent(input: ConsentInput!): Consent!
   consents(input: ConsentsInput!): ConsentConnection!
@@ -1421,8 +1540,11 @@ type Query {
   draftModuleInManualReview(moduleId: ID!): DraftMarketplaceModule!
   draftModules(after: String, first: Int, input: DraftModulesInput!): DraftMarketplaceModuleConnection!
   draftModulesInManualReview(after: String, first: Int, input: DraftModulesInManualReviewInput!): DraftMarketplaceModuleConnection!
+  generateWebAppFromManifest(input: GenerateWebAppFromManifestInput): WebAppFromManifest!
   insightsLayout(input: InsightsLayoutInput!): InsightsLayout!
   insightsLayouts(after: String, first: Int, input: InsightsLayoutsInput): InsightsLayoutConnection!
+  installedApps(input: ListInstalledAppsInput!): AppStoreApplicationConnection!
+  installedTiles(after: String, first: Int): TileConnection!
 
   """Returns true if the calling user is the owner of the module"""
   isMyModule(moduleId: ID!, version: String): Boolean!
@@ -1758,6 +1880,17 @@ type SetWorkflowDraftModuleSourceResponse {
   moduleId: ID!
 }
 
+type SkillSpringTileBehavior {
+  """
+  A SkillSpring directory to narrow down the available coaching experts for
+  this tile.
+  """
+  directory: String
+
+  """The SkillSpring account of the coaching service provider."""
+  skillSpringAccount: String!
+}
+
 enum SortOrder {
   ASC
   DESC
@@ -1818,6 +1951,41 @@ type SurveyTag {
 
 input SurveysInput {
   project: String!
+}
+
+"""
+The idea is to gradually move from AppStoreApplication to Tile, where each
+type of tile can have a different behavior.
+"""
+type Tile {
+  """
+  Determines how the tile will behave client side. For example, it could open
+  a URL with some auth data, or it could open the SkillSpring widget pointing
+  to a specific directory.
+  """
+  behavior: TileBehavior!
+  id: ID!
+  image: URL!
+  name: String!
+}
+
+union TileBehavior = LaunchUrlTileBehavior | SkillSpringTileBehavior | WebAppletTileBehavior
+
+type TileConnection {
+  edges: [TileEdge!]!
+  pageInfo: PageInfo!
+}
+
+type TileEdge {
+  node: Tile!
+}
+
+"""The URL scalar type represents URL addresses."""
+scalar URL
+
+input UninstallWebAppInput {
+  appId: ID!
+  userId: String!
 }
 
 input UpdateDraftModuleInput {
@@ -1923,6 +2091,28 @@ type VersionsV2Node {
   changeLog: String
   created: Long!
   version: String!
+}
+
+type WebAppFromManifest {
+  """Generated from the manifest.description property"""
+  description: String
+
+  """Generated from the input url and the manifest.icons['240'] property"""
+  image: URL
+
+  """Generated from the manifest.name property"""
+  name: String!
+
+  """Generated from the input URL"""
+  url: URL!
+}
+
+"""Meant to replace AppStoreWebApplication."""
+type WebAppletTileBehavior {
+  """Optional display string - used to display the author if not LifeOmic"""
+  authorDisplay: String
+  description: String
+  url: URL!
 }
 
 type WellnessOffering {
