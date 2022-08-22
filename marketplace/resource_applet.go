@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-semver/semver"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func getHash(url string) (*string, error) {
