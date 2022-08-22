@@ -3,7 +3,7 @@ package marketplace
 import (
 	"errors"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var errNotImplemented = errors.New("resource handler not implemented yet")
