@@ -32,11 +32,77 @@ func getHash(url string) (*string, error) {
 	return &text, nil
 }
 
+func getCustomClient(d *schema.ResourceData, client *MarketplaceClient) (*MarketplaceClient, error) {
+	account, ok := d.Get("account").(string)
+	if !ok || account == "" {
+		return client, nil
+	}
+
+	if d.HasChange("account") {
+		old, _ := d.GetChange("account")
+		oldAccount, ok := old.(string)
+		if ok && oldAccount != "" {
+			account = oldAccount
+		}
+	}
+
+	c, err := buildCustomClient(account, defaultUser, defaultPolicy)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
+
+func inputFromState(d *schema.ResourceData, id *string) appTileCreate {
+	account, ok := d.Get("account").(*string)
+	if !ok {
+		account = nil
+	}
+
+	scope, ok := d.Get("scope").(string)
+	if !ok {
+		scope = ""
+	}
+
+	parentModuleId, ok := d.Get("parent_module_id").(*string)
+	if !ok {
+		parentModuleId = nil
+	}
+	// allow overriding the id which is necessary for updating a module
+	if id != nil {
+		parentModuleId = id
+	}
+
+	url, ok := d.Get("url").(string)
+	if !ok {
+		url = ""
+	}
+	return appTileCreate{
+		Name:           d.Get("name").(string),
+		Image:          d.Get("image").(string),
+		AppTileId:      d.Get("app_tile_id").(string),
+		Description:    d.Get("description").(string),
+		Version:        d.Get("version").(string),
+		Account:        account,
+		Scope:          &scope,
+		ParentModuleId: parentModuleId,
+		Url:            &url,
+	}
+
+}
+
 func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*MarketplaceClient)
 	id := d.Id()
 	var app *AppTileModule
 	retryCount := 2
+
+	client, err := getCustomClient(d, client)
+	if err != nil {
+		return err
+	}
+
 	for app == nil && retryCount > 0 {
 		inner, err := client.getAppTileModule(id)
 		app = inner
@@ -71,6 +137,8 @@ func readAppTile(d *schema.ResourceData, meta interface{}) error {
 	if source, ok := app.Source.(*AppTileModuleSourceAppTile); ok {
 		d.Set("app_tile_id", source.Id)
 	}
+	d.Set("account", app.Organization.Id)
+	d.Set("scope", app.Scope)
 	return nil
 }
 
@@ -83,14 +151,12 @@ func createAppTile(d *schema.ResourceData, meta interface{}) error {
 		}
 		d.Set("version", "0.0.0")
 	}
-	id, err := client.publishNewAppTileModule(appTileCreate{
-		Name:           d.Get("name").(string),
-		Image:          d.Get("image").(string),
-		AppTileId:      d.Get("app_tile_id").(string),
-		Description:    d.Get("description").(string),
-		Version:        d.Get("version").(string),
-		ParentModuleId: nil,
-	})
+	client, err := getCustomClient(d, client)
+	if err != nil {
+		return err
+	}
+
+	id, err := client.publishNewAppTileModule(inputFromState(d, nil))
 	if err != nil {
 		return err
 	}
@@ -110,22 +176,25 @@ func updateAppTile(d *schema.ResourceData, meta interface{}) error {
 		d.Set("version", version.String())
 	}
 
-	_, err := client.publishNewAppTileModule(appTileCreate{
-		Name:           d.Get("name").(string),
-		Image:          d.Get("image").(string),
-		AppTileId:      d.Get("app_tile_id").(string),
-		Description:    d.Get("description").(string),
-		Version:        d.Get("version").(string),
-		ParentModuleId: &id,
-	})
+	client, err := getCustomClient(d, client)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.publishNewAppTileModule(inputFromState(d, &id))
 	return err
 }
 
 func deleteAppTile(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*MarketplaceClient).gqlClient
+	client := meta.(*MarketplaceClient)
 	id := d.Id()
 
-	if _, err := DeleteModule(context.Background(), client, DeleteModuleInput{ModuleId: id}); err != nil {
+	client, err := getCustomClient(d, client)
+	if err != nil {
+		return err
+	}
+
+	if _, err := DeleteModule(context.Background(), client.gqlClient, DeleteModuleInput{ModuleId: id}); err != nil {
 		return fmt.Errorf("failed to delete module %s: %w", id, err)
 	}
 
@@ -163,6 +232,20 @@ func appTileResource() *schema.Resource {
 			"auto_version": {
 				Type:     schema.TypeBool,
 				Optional: true,
+			},
+			"account": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"scope": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "One of 'LICENSED, 'ORGANIZATION', or 'PUBLIC'. Defaults to 'PUBLIC'",
+			},
+			"url": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Required when scope is set to 'ORGANIZATION'",
 			},
 		},
 		Create: createAppTile,

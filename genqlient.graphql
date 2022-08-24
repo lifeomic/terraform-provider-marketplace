@@ -2,6 +2,10 @@ fragment AppTileModule on MarketplaceModule {
   title
   description
   version
+  scope
+  organization {
+    id
+  }
   source {
     ... on AppTile {
       id
@@ -21,7 +25,12 @@ query GetPublishedModule($id: ID!, $version: String) {
   }
 }
 
-mutation CreateDraftModule($input: CreateDraftModuleInput!) {
+# @genqlient(for: "CreateDraftModuleInput.scope", omitempty: true)
+# @genqlient(for: "CreateDraftModuleInput.icon", omitempty: true)
+mutation CreateDraftModule(
+  # https://github.com/Khan/genqlient/issues/151
+  $input: CreateDraftModuleInput!
+) {
   createDraftModule(input: $input) {
     id
   }
@@ -35,6 +44,12 @@ mutation DeleteModule($input: DeleteModuleInput!) {
 
 mutation SetAppTile($input: SetPublicAppTileDraftModuleSourceInput!) {
   setPublicAppTileDraftModuleSource(input: $input) {
+    moduleId
+  }
+}
+
+mutation SetOrgAppTile($input: SetOrgAppTileDraftModuleSourceInput!) {
+  setOrgAppTileDraftModuleSource(input: $input) {
     moduleId
   }
 }

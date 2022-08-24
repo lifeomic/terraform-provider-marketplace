@@ -62,6 +62,7 @@ func wellnessOfferingResource() *schema.Resource {
 			},
 			"install_url": {
 				Required: true,
+				Type:     schema.TypeString,
 			},
 			"configuration_schema": {
 				Type:     schema.TypeString,

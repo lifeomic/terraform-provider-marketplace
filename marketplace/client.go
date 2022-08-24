@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -17,6 +18,11 @@ import (
 //go:generate go run github.com/Khan/genqlient
 
 const GRAPHQL_URL = "marketplace-service:deployed/v1/marketplace/authenticated/graphql"
+const defaultUser = "tf-provider"
+
+var defaultPolicy = map[string]bool{
+	"publishContent": true,
+}
 
 type MarketplaceClient struct {
 	phcClient *client.LambdaClient
@@ -38,6 +44,9 @@ type appTileCreate struct {
 	AppTileId      string
 	Version        string
 	ParentModuleId *string
+	Scope          *string
+	Account        *string
+	Url            *string
 }
 
 func postImageToUrl(url string, image string, file_name string, fields map[string]string) error {
@@ -122,11 +131,27 @@ func (marketplace *MarketplaceClient) createAppTileDraftModule(params appTileCre
 		parentModuleId = *params.ParentModuleId
 	}
 
+	var scope MarketplaceModuleScope
+	if params.Scope != nil && *params.Scope != "" {
+		scope = MarketplaceModuleScope(*params.Scope)
+	}
+
+	if scope != "" && scope != MarketplaceModuleScopeLicensed &&
+		scope != MarketplaceModuleScopeOrganization &&
+		scope != MarketplaceModuleScopePublic {
+		return nil, fmt.Errorf("unexpected module scope given. Expected one of 'LICENSED', 'ORGANIZATION', 'PUBLIC'. instead got: %s", scope)
+	}
+
+	if scope == MarketplaceModuleScopeOrganization && (params.Url == nil || *params.Url == "") {
+		return nil, fmt.Errorf("modules with 'ORGANIZATION' scope must have a url")
+	}
+
 	res, err := CreateDraftModule(context.Background(), marketplace.gqlClient, CreateDraftModuleInput{
 		Title:          params.Name,
 		Description:    params.Description,
 		ParentModuleId: parentModuleId,
 		Category:       "APP_TILE",
+		Scope:          scope,
 	})
 	if err != nil {
 		return nil, err
@@ -136,19 +161,38 @@ func (marketplace *MarketplaceClient) createAppTileDraftModule(params appTileCre
 		return nil, errors.New("unable to create draft module")
 	}
 
-	appTileRes, err := SetAppTile(context.Background(), marketplace.gqlClient, SetPublicAppTileDraftModuleSourceInput{
-		ModuleId: res.CreateDraftModule.Id,
-		SourceInfo: PublicAppTileModuleSourceInfo{
-			Id: params.AppTileId,
-		},
-	})
+	if scope == MarketplaceModuleScopePublic || scope == "" {
+		appTileRes, err := SetAppTile(context.Background(), marketplace.gqlClient, SetPublicAppTileDraftModuleSourceInput{
+			ModuleId: res.CreateDraftModule.Id,
+			SourceInfo: PublicAppTileModuleSourceInfo{
+				Id: params.AppTileId,
+			},
+		})
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		if appTileRes == nil {
+			return nil, errors.New("unable to set app tile")
+		}
 	}
 
-	if appTileRes == nil {
-		return nil, errors.New("unable to set app tile")
+	if scope == MarketplaceModuleScopeOrganization {
+		appTileRes, err := SetOrgAppTile(context.Background(), marketplace.gqlClient, SetOrgAppTileDraftModuleSourceInput{
+			ModuleId: res.CreateDraftModule.Id,
+			SourceInfo: OrgAppTileModuleSourceInfo{
+				Url: *params.Url,
+			},
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		if appTileRes == nil {
+			return nil, errors.New("unable to set app tile")
+		}
 	}
 
 	err = marketplace.attachImageToDraftModule(res.CreateDraftModule.Id, params.Image)
@@ -180,14 +224,16 @@ func (marketplace *MarketplaceClient) publishNewAppTileModule(params appTileCrea
 	return &publishRes.PublishDraftModuleV2.Id, nil
 }
 
-func BuildAppStoreClient() (*MarketplaceClient, error) {
-	phcClient, err := client.BuildClient("lifeomic", "marketplace-tf", map[string]bool{
-		"publishContent": true,
-	})
+func buildCustomClient(account, user string, policy map[string]bool) (*MarketplaceClient, error) {
+	phcClient, err := client.BuildClient(account, user, policy)
 	if err != nil {
 		return nil, err
 	}
 	gqlClient := graphql.NewClient(GRAPHQL_URL, phcClient)
 	client := MarketplaceClient{phcClient: phcClient, gqlClient: gqlClient}
 	return &client, nil
+}
+
+func BuildAppStoreClient() (*MarketplaceClient, error) {
+	return buildCustomClient("lifeomic", "marketplace-tf", defaultPolicy)
 }

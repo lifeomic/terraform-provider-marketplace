@@ -12,11 +12,13 @@ import (
 
 // AppTileModule includes the GraphQL fields of MarketplaceModule requested by the fragment AppTileModule.
 type AppTileModule struct {
-	Title       string                                     `json:"title"`
-	Description string                                     `json:"description"`
-	Version     string                                     `json:"version"`
-	Source      AppTileModuleSourceMarketplaceModuleSource `json:"-"`
-	IconV2      *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
+	Title        string                                     `json:"title"`
+	Description  string                                     `json:"description"`
+	Version      string                                     `json:"version"`
+	Scope        MarketplaceModuleScope                     `json:"scope"`
+	Organization AppTileModuleOrganizationOrganizationField `json:"organization"`
+	Source       AppTileModuleSourceMarketplaceModuleSource `json:"-"`
+	IconV2       *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
 }
 
 // GetTitle returns AppTileModule.Title, and is useful for accessing the field via an interface.
@@ -27,6 +29,14 @@ func (v *AppTileModule) GetDescription() string { return v.Description }
 
 // GetVersion returns AppTileModule.Version, and is useful for accessing the field via an interface.
 func (v *AppTileModule) GetVersion() string { return v.Version }
+
+// GetScope returns AppTileModule.Scope, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetScope() MarketplaceModuleScope { return v.Scope }
+
+// GetOrganization returns AppTileModule.Organization, and is useful for accessing the field via an interface.
+func (v *AppTileModule) GetOrganization() AppTileModuleOrganizationOrganizationField {
+	return v.Organization
+}
 
 // GetSource returns AppTileModule.Source, and is useful for accessing the field via an interface.
 func (v *AppTileModule) GetSource() AppTileModuleSourceMarketplaceModuleSource { return v.Source }
@@ -74,6 +84,10 @@ type __premarshalAppTileModule struct {
 
 	Version string `json:"version"`
 
+	Scope MarketplaceModuleScope `json:"scope"`
+
+	Organization AppTileModuleOrganizationOrganizationField `json:"organization"`
+
 	Source json.RawMessage `json:"source"`
 
 	IconV2 *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
@@ -93,6 +107,8 @@ func (v *AppTileModule) __premarshalJSON() (*__premarshalAppTileModule, error) {
 	retval.Title = v.Title
 	retval.Description = v.Description
 	retval.Version = v.Version
+	retval.Scope = v.Scope
+	retval.Organization = v.Organization
 	{
 
 		dst := &retval.Source
@@ -124,6 +140,14 @@ func (v *AppTileModuleIconV2MarketplaceModuleImage) GetFileName() string { retur
 
 // GetFileExtension returns AppTileModuleIconV2MarketplaceModuleImage.FileExtension, and is useful for accessing the field via an interface.
 func (v *AppTileModuleIconV2MarketplaceModuleImage) GetFileExtension() string { return v.FileExtension }
+
+// AppTileModuleOrganizationOrganizationField includes the requested fields of the GraphQL type OrganizationField.
+type AppTileModuleOrganizationOrganizationField struct {
+	Id string `json:"id"`
+}
+
+// GetId returns AppTileModuleOrganizationOrganizationField.Id, and is useful for accessing the field via an interface.
+func (v *AppTileModuleOrganizationOrganizationField) GetId() string { return v.Id }
 
 // AppTileModuleSourceAppTile includes the requested fields of the GraphQL type AppTile.
 type AppTileModuleSourceAppTile struct {
@@ -493,7 +517,7 @@ func (v *CreateDraftModuleCreateDraftModuleCreateDraftModuleResponse) GetId() st
 type CreateDraftModuleInput struct {
 	Category    ModuleCategory `json:"category"`
 	Description string         `json:"description"`
-	Icon        string         `json:"icon"`
+	Icon        string         `json:"icon,omitempty"`
 	// A unique identifier to use for the new module. If not provided, one will be generated.
 	Id               string                  `json:"id"`
 	Languages        []string                `json:"languages"`
@@ -503,7 +527,7 @@ type CreateDraftModuleInput struct {
 	PreviewVideoUrls []string                `json:"previewVideoUrls"`
 	Prices           []DraftModulePriceInput `json:"prices"`
 	Products         []ModuleProduct         `json:"products"`
-	Scope            MarketplaceModuleScope  `json:"scope"`
+	Scope            MarketplaceModuleScope  `json:"scope,omitempty"`
 	Support          string                  `json:"support"`
 	Tags             []string                `json:"tags"`
 	Title            string                  `json:"title"`
@@ -681,6 +705,16 @@ func (v *GetPublishedModuleMyModuleMarketplaceModule) GetVersion() string {
 	return v.AppTileModule.Version
 }
 
+// GetScope returns GetPublishedModuleMyModuleMarketplaceModule.Scope, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetScope() MarketplaceModuleScope {
+	return v.AppTileModule.Scope
+}
+
+// GetOrganization returns GetPublishedModuleMyModuleMarketplaceModule.Organization, and is useful for accessing the field via an interface.
+func (v *GetPublishedModuleMyModuleMarketplaceModule) GetOrganization() AppTileModuleOrganizationOrganizationField {
+	return v.AppTileModule.Organization
+}
+
 // GetSource returns GetPublishedModuleMyModuleMarketplaceModule.Source, and is useful for accessing the field via an interface.
 func (v *GetPublishedModuleMyModuleMarketplaceModule) GetSource() AppTileModuleSourceMarketplaceModuleSource {
 	return v.AppTileModule.Source
@@ -723,6 +757,10 @@ type __premarshalGetPublishedModuleMyModuleMarketplaceModule struct {
 
 	Version string `json:"version"`
 
+	Scope MarketplaceModuleScope `json:"scope"`
+
+	Organization AppTileModuleOrganizationOrganizationField `json:"organization"`
+
 	Source json.RawMessage `json:"source"`
 
 	IconV2 *AppTileModuleIconV2MarketplaceModuleImage `json:"iconV2"`
@@ -742,6 +780,8 @@ func (v *GetPublishedModuleMyModuleMarketplaceModule) __premarshalJSON() (*__pre
 	retval.Title = v.AppTileModule.Title
 	retval.Description = v.AppTileModule.Description
 	retval.Version = v.AppTileModule.Version
+	retval.Scope = v.AppTileModule.Scope
+	retval.Organization = v.AppTileModule.Organization
 	{
 
 		dst := &retval.Source
@@ -831,6 +871,13 @@ func (v *ModuleVersionInput) GetChangeLog() string { return v.ChangeLog }
 // GetVersion returns ModuleVersionInput.Version, and is useful for accessing the field via an interface.
 func (v *ModuleVersionInput) GetVersion() string { return v.Version }
 
+type OrgAppTileModuleSourceInfo struct {
+	Url string `json:"url"`
+}
+
+// GetUrl returns OrgAppTileModuleSourceInfo.Url, and is useful for accessing the field via an interface.
+func (v *OrgAppTileModuleSourceInfo) GetUrl() string { return v.Url }
+
 type PaymentInterval string
 
 const (
@@ -917,6 +964,39 @@ type SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceRespo
 
 // GetModuleId returns SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse.ModuleId, and is useful for accessing the field via an interface.
 func (v *SetAppTileSetPublicAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse) GetModuleId() string {
+	return v.ModuleId
+}
+
+type SetOrgAppTileDraftModuleSourceInput struct {
+	ModuleId   string                     `json:"moduleId"`
+	SourceInfo OrgAppTileModuleSourceInfo `json:"sourceInfo"`
+}
+
+// GetModuleId returns SetOrgAppTileDraftModuleSourceInput.ModuleId, and is useful for accessing the field via an interface.
+func (v *SetOrgAppTileDraftModuleSourceInput) GetModuleId() string { return v.ModuleId }
+
+// GetSourceInfo returns SetOrgAppTileDraftModuleSourceInput.SourceInfo, and is useful for accessing the field via an interface.
+func (v *SetOrgAppTileDraftModuleSourceInput) GetSourceInfo() OrgAppTileModuleSourceInfo {
+	return v.SourceInfo
+}
+
+// SetOrgAppTileResponse is returned by SetOrgAppTile on success.
+type SetOrgAppTileResponse struct {
+	SetOrgAppTileDraftModuleSource SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse `json:"setOrgAppTileDraftModuleSource"`
+}
+
+// GetSetOrgAppTileDraftModuleSource returns SetOrgAppTileResponse.SetOrgAppTileDraftModuleSource, and is useful for accessing the field via an interface.
+func (v *SetOrgAppTileResponse) GetSetOrgAppTileDraftModuleSource() SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse {
+	return v.SetOrgAppTileDraftModuleSource
+}
+
+// SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse includes the requested fields of the GraphQL type SetAppTileDraftModuleSourceResponse.
+type SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+
+// GetModuleId returns SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse.ModuleId, and is useful for accessing the field via an interface.
+func (v *SetOrgAppTileSetOrgAppTileDraftModuleSourceSetAppTileDraftModuleSourceResponse) GetModuleId() string {
 	return v.ModuleId
 }
 
@@ -1026,6 +1106,14 @@ type __SetAppTileInput struct {
 
 // GetInput returns __SetAppTileInput.Input, and is useful for accessing the field via an interface.
 func (v *__SetAppTileInput) GetInput() SetPublicAppTileDraftModuleSourceInput { return v.Input }
+
+// __SetOrgAppTileInput is used internally by genqlient
+type __SetOrgAppTileInput struct {
+	Input SetOrgAppTileDraftModuleSourceInput `json:"input"`
+}
+
+// GetInput returns __SetOrgAppTileInput.Input, and is useful for accessing the field via an interface.
+func (v *__SetOrgAppTileInput) GetInput() SetOrgAppTileDraftModuleSourceInput { return v.Input }
 
 // __StartImageUploadInput is used internally by genqlient
 type __StartImageUploadInput struct {
@@ -1149,6 +1237,10 @@ fragment AppTileModule on MarketplaceModule {
 	title
 	description
 	version
+	scope
+	organization {
+		id
+	}
 	source {
 		__typename
 		... on AppTile {
@@ -1237,6 +1329,38 @@ mutation SetAppTile ($input: SetPublicAppTileDraftModuleSourceInput!) {
 	var err error
 
 	var data SetAppTileResponse
+	resp := &graphql.Response{Data: &data}
+
+	err = client.MakeRequest(
+		ctx,
+		req,
+		resp,
+	)
+
+	return &data, err
+}
+
+func SetOrgAppTile(
+	ctx context.Context,
+	client graphql.Client,
+	input SetOrgAppTileDraftModuleSourceInput,
+) (*SetOrgAppTileResponse, error) {
+	req := &graphql.Request{
+		OpName: "SetOrgAppTile",
+		Query: `
+mutation SetOrgAppTile ($input: SetOrgAppTileDraftModuleSourceInput!) {
+	setOrgAppTileDraftModuleSource(input: $input) {
+		moduleId
+	}
+}
+`,
+		Variables: &__SetOrgAppTileInput{
+			Input: input,
+		},
+	}
+	var err error
+
+	var data SetOrgAppTileResponse
 	resp := &graphql.Response{Data: &data}
 
 	err = client.MakeRequest(
