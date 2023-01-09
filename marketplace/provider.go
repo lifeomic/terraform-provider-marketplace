@@ -14,7 +14,6 @@ func Provider() *schema.Provider {
 		Schema:        map[string]*schema.Schema{},
 		ResourcesMap: map[string]*schema.Resource{
 			"app_tile":          appTileResource(),
-			"wellness_offering": wellnessOfferingResource(),
 		},
 	}
 }
