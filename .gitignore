@@ -7,3 +7,4 @@ dist
 terraform-provider-marketplace
 
 node_modules/
+*.swp
